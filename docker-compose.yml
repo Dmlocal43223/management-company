@@ -24,7 +24,29 @@ services:
 
   pgsql:
     image: postgres:16.4
+    ports:
+      - "25444:5432"
     environment:
-      - POSTGRES_DB=yii2advanced
-      - POSTGRES_USER=yii2advanced
+      - POSTGRES_DB=management_company
+      - POSTGRES_USER=management
       - POSTGRES_PASSWORD=secret
+
+  pgsql-test:
+    image: postgres:16.4
+    ports:
+      - "25445:5432"
+    environment:
+      - POSTGRES_DB=management_company_test
+      - POSTGRES_USER=management_test
+      - POSTGRES_PASSWORD=secret
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+volumes:
+  redis-data:
+    driver: local
