@@ -17,6 +17,12 @@ return [
                 'database' => 0,
             ],
         ],
+        'elasticsearch' => [
+            'class' => 'yii\elasticsearch\Connection',
+            'nodes' => [
+                ['http_address' => 'elasticsearch:9200'],
+            ],
+        ],
         'redis' => [
             'class' => 'yii\redis\Connection',
             'hostname' => 'management-company-redis-1',
