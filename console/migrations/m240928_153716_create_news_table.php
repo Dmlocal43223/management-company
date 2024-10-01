@@ -43,6 +43,12 @@ class m240928_153716_create_news_table extends Migration
             '{{%news}}',
             'title'
         );
+
+        $this->createIndex(
+            '{{%idx-news-deleted}}',
+            '{{%news}}',
+            'deleted'
+        );
     }
 
     /**
@@ -50,6 +56,11 @@ class m240928_153716_create_news_table extends Migration
      */
     public function safeDown()
     {
+        $this->dropIndex(
+            '{{%idx-news-deleted}}',
+            '{{%news}}'
+        );
+
         $this->dropIndex(
             '{{%idx-news-title}}',
             '{{%news}}'

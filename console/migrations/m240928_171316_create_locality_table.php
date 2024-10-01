@@ -43,6 +43,12 @@ class m240928_171316_create_locality_table extends Migration
             'RESTRICT',
             'CASCADE'
         );
+
+        $this->createIndex(
+            '{{%idx-locality-deleted}}',
+            '{{%locality}}',
+            'deleted'
+        );
     }
 
     /**
@@ -50,6 +56,11 @@ class m240928_171316_create_locality_table extends Migration
      */
     public function safeDown()
     {
+        $this->dropIndex(
+            '{{%idx-locality-deleted}}',
+            '{{%locality}}'
+        );
+
         $this->dropForeignKey(
             '{{%fk-locality-region_id}}',
             '{{%locality}}'

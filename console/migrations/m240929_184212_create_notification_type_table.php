@@ -14,7 +14,23 @@ class m240929_184212_create_notification_type_table extends Migration
     {
         $this->createTable('{{%notification_type}}', [
             'id' => $this->primaryKey(),
+            'name' => $this->string()->notNull()->unique(),
+            'deleted' => $this->boolean()->notNull()->defaultValue(false),
+            'created_at' => $this->dateTime()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
+            'updated_at' => $this->dateTime()->notNull()->defaultExpression('CURRENT_TIMESTAMP')
         ]);
+
+//        $this->createIndex(
+//            '{{%idx-notification_type-name}}',
+//            '{{%notification_type}}',
+//            'name'
+//        );
+
+        $this->createIndex(
+            '{{%idx-notification_type-deleted}}',
+            '{{%notification_type}}',
+            'deleted'
+        );
     }
 
     /**
@@ -22,6 +38,16 @@ class m240929_184212_create_notification_type_table extends Migration
      */
     public function safeDown()
     {
+        $this->dropIndex(
+            '{{%idx-notification_type-deleted}}',
+            '{{%notification_type}}'
+        );
+
+//        $this->dropIndex(
+//            '{{%idx-notification_type-name}}',
+//            '{{%notification_type}}'
+//        );
+
         $this->dropTable('{{%notification_type}}');
     }
 }

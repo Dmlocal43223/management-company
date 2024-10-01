@@ -17,6 +17,7 @@ class m240928_165830_create_ticket_table extends Migration
             'number' => $this->string()->notNull()->unique(),
             'status_id' => $this->integer()->notNull(),
             'description' => $this->text()->notNull(),
+            'house_id' => $this->integer()->notNull(),
             'type_id' => $this->integer()->notNull(),
             'deleted' => $this->boolean()->notNull()->defaultValue(false),
             'closed_at' => $this->dateTime()->null(),
@@ -41,6 +42,22 @@ class m240928_165830_create_ticket_table extends Migration
         );
 
         $this->createIndex(
+            '{{%idx-ticket-house_id}}',
+            '{{%ticket}}',
+            'house_id'
+        );
+
+        $this->addForeignKey(
+            '{{%fk-ticket-house_id}}',
+            '{{%ticket}}',
+            'house_id',
+            '{{%house}}',
+            'id',
+            'RESTRICT',
+            'CASCADE'
+        );
+
+        $this->createIndex(
             '{{%idx-ticket-type_id}}',
             '{{%ticket}}',
             'type_id'
@@ -55,6 +72,12 @@ class m240928_165830_create_ticket_table extends Migration
             'RESTRICT',
             'CASCADE'
         );
+
+        $this->createIndex(
+            '{{%idx-ticket-deleted}}',
+            '{{%ticket}}',
+            'deleted'
+        );
     }
 
     /**
@@ -62,6 +85,11 @@ class m240928_165830_create_ticket_table extends Migration
      */
     public function safeDown()
     {
+        $this->dropIndex(
+            '{{%idx-ticket-deleted}}',
+            '{{%ticket}}'
+        );
+
         $this->dropForeignKey(
             '{{%fk-ticket-type_id}}',
             '{{%ticket}}'
@@ -69,6 +97,16 @@ class m240928_165830_create_ticket_table extends Migration
 
         $this->dropIndex(
             '{{%idx-ticket-type_id}}',
+            '{{%ticket}}'
+        );
+
+        $this->dropForeignKey(
+            '{{%fk-ticket-house_id}}',
+            '{{%ticket}}'
+        );
+
+        $this->dropIndex(
+            '{{%idx-ticket-house_id}}',
             '{{%ticket}}'
         );
 

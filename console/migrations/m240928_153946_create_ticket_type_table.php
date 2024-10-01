@@ -20,10 +20,16 @@ class m240928153946_create_ticket_type_table extends Migration
             'updated_at' => $this->dateTime()->notNull()->defaultExpression('CURRENT_TIMESTAMP')
         ]);
 
+//        $this->createIndex(
+//            '{{%idx-ticket_type-name}}',
+//            '{{%ticket_type}}',
+//            'name'
+//        );
+
         $this->createIndex(
-            '{{%idx-ticket_type-name}}',
+            '{{%idx-ticket_type-deleted}}',
             '{{%ticket_type}}',
-            'name'
+            'deleted'
         );
     }
 
@@ -33,9 +39,14 @@ class m240928153946_create_ticket_type_table extends Migration
     public function safeDown()
     {
         $this->dropIndex(
-            '{{%idx-ticket_type-name}}',
+            '{{%idx-ticket_type-deleted}}',
             '{{%ticket_type}}'
         );
+
+//        $this->dropIndex(
+//            '{{%idx-ticket_type-name}}',
+//            '{{%ticket_type}}'
+//        );
 
         $this->dropTable('{{%ticket_type}}');
     }

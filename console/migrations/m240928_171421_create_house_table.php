@@ -15,34 +15,39 @@ class m240928_171421_create_house_table extends Migration
         $this->createTable('{{%house}}', [
             'id' => $this->primaryKey(),
             'number' => $this->string()->notNull(),
-            'street' => $this->string()->notNull(),
-            'locality_id' => $this->integer()->notNull(),
+            'street_id' => $this->integer()->notNull(),
             'deleted' => $this->boolean()->notNull()->defaultValue(false),
             'created_at' => $this->dateTime()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
             'updated_at' => $this->dateTime()->notNull()->defaultExpression('CURRENT_TIMESTAMP')
         ]);
 
         $this->createIndex(
-            '{{%idx-house-number-street-locality_id}}',
+            '{{%idx-house-number-street_id}}',
             '{{%house}}',
-            ['number', 'street', 'locality_id'],
+            ['number', 'street_id'],
             true
         );
 
         $this->createIndex(
-            '{{%idx-house-locality_id}}',
+            '{{%idx-house-street_id}}',
             '{{%house}}',
-            'locality_id'
+            'street_id'
         );
 
         $this->addForeignKey(
-            '{{%fk-house-locality_id}}',
+            '{{%fk-house-street_id}}',
             '{{%house}}',
-            'locality_id',
-            '{{%locality}}',
+            'street_id',
+            '{{%street}}',
             'id',
             'RESTRICT',
             'CASCADE'
+        );
+
+        $this->createIndex(
+            '{{%idx-house-deleted}}',
+            '{{%house}}',
+            'deleted'
         );
     }
 
@@ -51,18 +56,23 @@ class m240928_171421_create_house_table extends Migration
      */
     public function safeDown()
     {
+        $this->dropIndex(
+            '{{%idx-house-deleted}}',
+            '{{%house}}'
+        );
+
         $this->dropForeignKey(
-            '{{%fk-house-locality_id}}',
+            '{{%fk-house-street_id}}',
             '{{%house}}'
         );
 
         $this->dropIndex(
-            '{{%idx-house-locality_id}}',
+            '{{%idx-house-street_id}}',
             '{{%house}}'
         );
 
         $this->dropIndex(
-            '{{%idx-house-number-street-locality_id}}',
+            '{{%idx-house-number-street_id}}',
             '{{%house}}'
         );
 
