@@ -48,7 +48,7 @@ class m240929_182136_create_ticket_history_table extends Migration
             '{{%fk-ticket_history-status_id}}',
             '{{%ticket_history}}',
             'status_id',
-            '{{%status}}',
+            '{{%ticket_status}}',
             'id',
             'RESTRICT',
             'CASCADE'

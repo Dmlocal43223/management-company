@@ -20,12 +20,6 @@ class m241001_074133_create_role_table extends Migration
             'updated_at' => $this->dateTime()->notNull()->defaultExpression('CURRENT_TIMESTAMP')
         ]);
 
-//        $this->createIndex(
-//            '{{%idx-role-name}}',
-//            '{{%role}}',
-//            'name'
-//        );
-
         $this->createIndex(
             '{{%idx-role-deleted}}',
             '{{%role}}',
@@ -42,11 +36,6 @@ class m241001_074133_create_role_table extends Migration
             '{{%idx-role-deleted}}',
             '{{%role}}'
         );
-
-//        $this->dropIndex(
-//            '{{%idx-role-name}}',
-//            '{{%role}}'
-//        );
 
         $this->dropTable('{{%role}}');
     }

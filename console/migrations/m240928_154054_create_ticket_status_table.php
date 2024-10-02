@@ -20,12 +20,6 @@ class m240928_154054_create_ticket_status_table extends Migration
             'updated_at' => $this->dateTime()->notNull()->defaultExpression('CURRENT_TIMESTAMP')
         ]);
 
-//        $this->createIndex(
-//            '{{%idx-ticket_status-name}}',
-//            '{{%ticket_status}}',
-//            'name'
-//        );
-
         $this->createIndex(
             '{{%idx-ticket_status-deleted}}',
             '{{%ticket_status}}',
@@ -42,11 +36,6 @@ class m240928_154054_create_ticket_status_table extends Migration
             '{{%idx-ticket_status-deleted}}',
             '{{%ticket_status}}'
         );
-
-//        $this->dropIndex(
-//            '{{%idx-ticket_status-name}}',
-//            '{{%ticket_status}}'
-//        );
 
         $this->dropTable('{{%ticket_status}}');
     }

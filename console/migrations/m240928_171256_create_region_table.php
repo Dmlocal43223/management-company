@@ -20,12 +20,6 @@ class m240928_171256_create_region_table extends Migration
             'updated_at' => $this->dateTime()->notNull()->defaultExpression('CURRENT_TIMESTAMP')
         ]);
 
-//        $this->createIndex(
-//            '{{%idx-region-name}}',
-//            '{{%region}}',
-//            'name'
-//        );
-
         $this->createIndex(
             '{{%idx-region-deleted}}',
             '{{%region}}',
@@ -42,11 +36,6 @@ class m240928_171256_create_region_table extends Migration
             '{{%idx-region-deleted}}',
             '{{%region}}'
         );
-
-//        $this->dropIndex(
-//            '{{%idx-region-name}}',
-//            '{{%region}}'
-//        );
 
         $this->dropTable('{{%region}}');
     }

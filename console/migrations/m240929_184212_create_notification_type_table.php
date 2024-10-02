@@ -20,12 +20,6 @@ class m240929_184212_create_notification_type_table extends Migration
             'updated_at' => $this->dateTime()->notNull()->defaultExpression('CURRENT_TIMESTAMP')
         ]);
 
-//        $this->createIndex(
-//            '{{%idx-notification_type-name}}',
-//            '{{%notification_type}}',
-//            'name'
-//        );
-
         $this->createIndex(
             '{{%idx-notification_type-deleted}}',
             '{{%notification_type}}',
@@ -42,11 +36,6 @@ class m240929_184212_create_notification_type_table extends Migration
             '{{%idx-notification_type-deleted}}',
             '{{%notification_type}}'
         );
-
-//        $this->dropIndex(
-//            '{{%idx-notification_type-name}}',
-//            '{{%notification_type}}'
-//        );
 
         $this->dropTable('{{%notification_type}}');
     }

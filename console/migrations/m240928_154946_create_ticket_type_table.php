@@ -5,7 +5,7 @@ use yii\db\Migration;
 /**
  * Handles the creation of table `{{%ticket_type}}`.
  */
-class m240928153946_create_ticket_type_table extends Migration
+class m240928_154946_create_ticket_type_table extends Migration
 {
     /**
      * {@inheritdoc}
@@ -19,12 +19,6 @@ class m240928153946_create_ticket_type_table extends Migration
             'created_at' => $this->dateTime()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
             'updated_at' => $this->dateTime()->notNull()->defaultExpression('CURRENT_TIMESTAMP')
         ]);
-
-//        $this->createIndex(
-//            '{{%idx-ticket_type-name}}',
-//            '{{%ticket_type}}',
-//            'name'
-//        );
 
         $this->createIndex(
             '{{%idx-ticket_type-deleted}}',
@@ -42,11 +36,6 @@ class m240928153946_create_ticket_type_table extends Migration
             '{{%idx-ticket_type-deleted}}',
             '{{%ticket_type}}'
         );
-
-//        $this->dropIndex(
-//            '{{%idx-ticket_type-name}}',
-//            '{{%ticket_type}}'
-//        );
 
         $this->dropTable('{{%ticket_type}}');
     }

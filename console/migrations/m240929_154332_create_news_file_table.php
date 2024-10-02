@@ -16,6 +16,8 @@ class m240929_154332_create_news_file_table extends Migration
             'id' => $this->primaryKey(),
             'news_id' => $this->integer()->notNull(),
             'file_id' => $this->integer()->notNull(),
+            'created_at' => $this->dateTime()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
+            'updated_at' => $this->dateTime()->notNull()->defaultExpression('CURRENT_TIMESTAMP')
         ]);
 
         $this->createIndex(
