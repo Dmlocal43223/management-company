@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace frontend\services\auth;
 
-use common\entities\User;
 use DomainException;
 use frontend\forms\PasswordResetRequestForm;
 use frontend\forms\ResetPasswordForm;
 use RuntimeException;
+use src\user\entities\User;
 use Yii;
 use yii\base\InvalidArgumentException;
 

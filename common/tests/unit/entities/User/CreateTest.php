@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace unit\entities\User;
 
 use Codeception\Test\Unit;
-use common\entities\User;
+use src\user\entities\User;
 
 class CreateTest extends Unit
 {

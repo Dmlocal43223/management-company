@@ -1,11 +1,15 @@
 <?php
 
-namespace common\entities;
+declare(strict_types=1);
+
+namespace src\user\entities;
 
 use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use yii\db\BaseActiveRecord;
+use yii\db\Expression;
 use yii\web\IdentityInterface;
 
 /**
@@ -55,7 +59,13 @@ class User extends ActiveRecord implements IdentityInterface
     public function behaviors(): array
     {
         return [
-            TimestampBehavior::class,
+            [
+                'class' => TimestampBehavior::class,
+                'attributes' => [
+                    BaseActiveRecord::EVENT_BEFORE_UPDATE => ['update_at'],
+                ],
+                'value' => new Expression('CURRENT_TIMESTAMP'),
+            ],
         ];
     }
 

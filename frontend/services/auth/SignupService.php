@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace frontend\services\auth;
 
-use common\entities\User;
 use DomainException;
 use frontend\forms\SignupForm;
 use RuntimeException;
+use src\user\entities\User;
 
 class SignupService
 {
