@@ -10,7 +10,12 @@ class TestController extends Controller
 {
     public function actionModel()
     {
+        dd(Yii::$app->authManager);
+
+        dd(class_exists('src\role\entities\Role'));
+//        dd(class_exists('Role'));
         $role = Role::findOne(1);
+        dd($role);
         $role->name = 'test4';
 
         $role->save();

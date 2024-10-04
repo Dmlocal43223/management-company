@@ -68,10 +68,10 @@ class FileType extends ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
-            'deleted' => 'Deleted',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
+            'name' => 'Название',
+            'deleted' => 'Удалено',
+            'created_at' => 'Дата создания',
+            'updated_at' => 'Дата обновления',
         ];
     }
 
