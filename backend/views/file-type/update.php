@@ -6,9 +6,9 @@ use yii\helpers\Html;
 /** @var src\file\entities\FileType $model */
 
 $this->title = 'Обновить тип файла: ' . $model->name;
-$this->params['breadcrumbs'][] = ['label' => 'File Types', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Типы файлов', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'id' => $model->id]];
-$this->params['breadcrumbs'][] = 'Update';
+$this->params['breadcrumbs'][] = 'Обновить';
 ?>
 <div class="file-type-update">
 

@@ -23,6 +23,10 @@ use yii\db\Expression;
  */
 class FileType extends ActiveRecord
 {
+    public const PHOTO_TYPE_ID = 1;
+    public const PREVIEW_TYPE_ID = 2;
+    public const DOCUMENT_TYPE_ID = 3;
+
     /**
      * {@inheritdoc}
      */

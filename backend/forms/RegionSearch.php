@@ -1,16 +1,22 @@
 <?php
 
-namespace backend\search;
+namespace backend\forms;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use src\file\entities\FileType;
+use src\location\entities\Region;
 
 /**
- * FileSearch represents the model behind the search form of `src\file\entities\FileType`.
+ * RegionSearch represents the model behind the search form of `src\location\entities\Region`.
  */
-class FileSearch extends FileType
+class RegionSearch extends Model
 {
+    public $id;
+    public $name;
+    public $deleted;
+    public $created_at;
+    public $updated_at;
+
     /**
      * {@inheritdoc}
      */
@@ -24,26 +30,15 @@ class FileSearch extends FileType
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function scenarios()
-    {
-        // bypass scenarios() implementation in the parent class
-        return Model::scenarios();
-    }
-
-    /**
      * Creates data provider instance with search query applied
      *
      * @param array $params
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
+    public function search(array $params): ActiveDataProvider
     {
-        $query = FileType::find();
-
-        // add conditions that should always apply here
+        $query = Region::find();
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -52,12 +47,9 @@ class FileSearch extends FileType
         $this->load($params);
 
         if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
             return $dataProvider;
         }
 
-        // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
             'deleted' => $this->deleted,

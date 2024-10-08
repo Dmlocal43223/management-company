@@ -18,6 +18,7 @@ class m240928_185830_create_ticket_table extends Migration
             'status_id' => $this->integer()->notNull(),
             'description' => $this->text()->notNull(),
             'house_id' => $this->integer()->notNull(),
+            'apartment_id' => $this->integer()->null(),
             'type_id' => $this->integer()->notNull(),
             'deleted' => $this->boolean()->notNull()->defaultValue(false),
             'closed_at' => $this->dateTime()->null(),
@@ -52,6 +53,22 @@ class m240928_185830_create_ticket_table extends Migration
             '{{%ticket}}',
             'house_id',
             '{{%house}}',
+            'id',
+            'RESTRICT',
+            'CASCADE'
+        );
+
+        $this->createIndex(
+            '{{%idx-ticket-apartment_id}}',
+            '{{%ticket}}',
+            'apartment_id'
+        );
+
+        $this->addForeignKey(
+            '{{%fk-ticket-apartment_id}}',
+            '{{%ticket}}',
+            'apartment_id',
+            '{{%apartment}}',
             'id',
             'RESTRICT',
             'CASCADE'
@@ -97,6 +114,16 @@ class m240928_185830_create_ticket_table extends Migration
 
         $this->dropIndex(
             '{{%idx-ticket-type_id}}',
+            '{{%ticket}}'
+        );
+
+        $this->dropForeignKey(
+            '{{%fk-ticket-apartment_id}}',
+            '{{%ticket}}'
+        );
+
+        $this->dropIndex(
+            '{{%idx-ticket-apartment_id}}',
             '{{%ticket}}'
         );
 

@@ -40,8 +40,6 @@ class House extends ActiveRecord
         return '{{%house}}';
     }
 
-
-
     /**
      * {@inheritdoc}
      */

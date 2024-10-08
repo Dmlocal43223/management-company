@@ -7,7 +7,7 @@ use yii\widgets\DetailView;
 /** @var src\file\entities\FileType $model */
 
 $this->title = $model->name;
-$this->params['breadcrumbs'][] = ['label' => 'File Types', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Типы файлов', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>

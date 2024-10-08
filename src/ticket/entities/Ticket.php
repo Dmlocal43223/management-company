@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace src\ticket\entities;
 
+use src\location\entities\Apartment;
 use src\location\entities\House;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
@@ -19,12 +20,14 @@ use yii\db\Expression;
  * @property int $status_id
  * @property string $description
  * @property int $house_id
+ * @property int $apartment_id
  * @property int $type_id
  * @property bool $deleted
  * @property string|null $closed_at
  * @property string $created_at
  * @property string $updated_at
  *
+ * @property Apartment $apartment
  * @property House $house
  * @property TicketStatus $status
  * @property TicketHistory[] $ticketHistories
@@ -63,14 +66,15 @@ class Ticket extends ActiveRecord
     {
         return [
             [['number', 'status_id', 'description', 'house_id', 'type_id'], 'required'],
-            [['status_id', 'house_id', 'type_id'], 'default', 'value' => null],
-            [['status_id', 'house_id', 'type_id'], 'integer'],
+            [['status_id', 'house_id', 'apartment_id', 'type_id'], 'default', 'value' => null],
+            [['status_id', 'house_id', 'apartment_id', 'type_id'], 'integer'],
             [['description'], 'string'],
             [['deleted'], 'boolean'],
             [['closed_at', 'created_at', 'updated_at'], 'safe'],
             [['number'], 'string', 'max' => 255],
             [['number'], 'unique'],
             [['house_id'], 'exist', 'skipOnError' => true, 'targetClass' => House::class, 'targetAttribute' => ['house_id' => 'id']],
+            [['apartment_id'], 'exist', 'skipOnError' => true, 'targetClass' => Apartment::class, 'targetAttribute' => ['apartment_id' => 'id']],
             [['status_id'], 'exist', 'skipOnError' => true, 'targetClass' => TicketStatus::class, 'targetAttribute' => ['status_id' => 'id']],
             [['type_id'], 'exist', 'skipOnError' => true, 'targetClass' => TicketType::class, 'targetAttribute' => ['type_id' => 'id']],
         ];
@@ -87,6 +91,7 @@ class Ticket extends ActiveRecord
             'status_id' => 'Status ID',
             'description' => 'Description',
             'house_id' => 'House ID',
+            'apartment_id' => 'apartment',
             'type_id' => 'Type ID',
             'deleted' => 'Deleted',
             'closed_at' => 'Closed At',
@@ -103,6 +108,16 @@ class Ticket extends ActiveRecord
     public function getHouse(): ActiveQuery
     {
         return $this->hasOne(House::class, ['id' => 'house_id']);
+    }
+
+    /**
+     * Gets query for [[Apartment]].
+     *
+     * @return ActiveQuery
+     */
+    public function getApartment(): ActiveQuery
+    {
+        return $this->hasOne(Apartment::class, ['id' => 'apartment_id']);
     }
 
     /**

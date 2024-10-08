@@ -15,7 +15,7 @@ class m240930_175731_create_user_tenant_table extends Migration
         $this->createTable('{{%user_tenant}}', [
             'id' => $this->primaryKey(),
             'user_id' => $this->integer()->notNull(),
-            'house_id' => $this->integer()->notNull(),
+            'apartment_id' => $this->integer()->notNull(),
             'is_active' => $this->boolean()->notNull()->defaultValue(false),
             'created_at' => $this->dateTime()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
             'updated_at' => $this->dateTime()->notNull()->defaultExpression('CURRENT_TIMESTAMP')
@@ -38,16 +38,16 @@ class m240930_175731_create_user_tenant_table extends Migration
         );
 
         $this->createIndex(
-            '{{%idx-user_tenant-house_id}}',
+            '{{%idx-user_tenant-apartment_id}}',
             '{{%user_tenant}}',
-            'house_id'
+            'apartment_id'
         );
 
         $this->addForeignKey(
-            '{{%fk-user_tenant-house_id}}',
+            '{{%fk-user_tenant-apartment_id}}',
             '{{%user_tenant}}',
-            'house_id',
-            '{{%house}}',
+            'apartment_id',
+            '{{%apartment}}',
             'id',
             'RESTRICT',
             'CASCADE'
@@ -71,12 +71,12 @@ class m240930_175731_create_user_tenant_table extends Migration
         );
 
         $this->dropForeignKey(
-            '{{%fk-user_tenant-house_id}}',
+            '{{%fk-user_tenant-apartment_id}}',
             '{{%user_tenant}}'
         );
 
         $this->dropIndex(
-            '{{%idx-user_tenant-house_id}}',
+            '{{%idx-user_tenant-apartment_id}}',
             '{{%user_tenant}}'
         );
 

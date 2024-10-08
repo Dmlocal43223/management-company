@@ -71,11 +71,20 @@ class NewsFile extends ActiveRecord
     {
         return [
             'id' => 'ID',
-            'news_id' => 'News ID',
-            'file_id' => 'File ID',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
+            'news_id' => 'Новость',
+            'file_id' => 'Файл',
+            'created_at' => 'Дата создания',
+            'updated_at' => 'Дата обновления',
         ];
+    }
+
+    public static function create(News $news, File $file): static
+    {
+        $newsFile = new static();
+        $newsFile->news_id = $news->id;
+        $newsFile->file_id = $file->id;
+
+        return $newsFile;
     }
 
     /**

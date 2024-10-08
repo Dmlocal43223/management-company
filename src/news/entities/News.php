@@ -28,6 +28,9 @@ use yii\db\Expression;
  */
 class News extends ActiveRecord
 {
+    public const STATUS_ACTIVE = 0;
+    public const STATUS_DELETED = 1;
+
     /**
      * {@inheritdoc}
      */
@@ -76,13 +79,24 @@ class News extends ActiveRecord
     {
         return [
             'id' => 'ID',
-            'title' => 'Title',
-            'content' => 'Content',
-            'author_id' => 'Author ID',
-            'deleted' => 'Deleted',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
+            'title' => 'Заголовок',
+            'content' => 'Содержание',
+            'author_id' => 'Автор',
+            'deleted' => 'Удалено',
+            'created_at' => 'Дата создания',
+            'updated_at' => 'Дата обновления',
         ];
+    }
+
+    public static function create(string $title, string $content): static
+    {
+        $news = new static();
+        $news->title = $title;
+        $news->content = $content;
+        $news->deleted = static::STATUS_ACTIVE;
+        $news->created_at = new Expression('CURRENT_TIMESTAMP');
+
+        return $news;
     }
 
     /**

@@ -30,6 +30,9 @@ use yii\db\Expression;
  */
 class File extends ActiveRecord
 {
+    public const STATUS_ACTIVE = 0;
+    public const STATUS_DELETED = 1;
+
     /**
      * {@inheritdoc}
      */
@@ -78,13 +81,25 @@ class File extends ActiveRecord
     {
         return [
             'id' => 'ID',
-            'source' => 'Source',
-            'type_id' => 'Type ID',
-            'created_user_id' => 'Created User ID',
-            'deleted' => 'Deleted',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
+            'source' => 'Источник',
+            'type_id' => 'Тип',
+            'created_user_id' => 'Пользователь',
+            'deleted' => 'Удалено',
+            'created_at' => 'Дата создания',
+            'updated_at' => 'Дата обновления',
         ];
+    }
+
+    public static function create(string $source, int $typeId, User $user): static
+    {
+        $file = new static();
+        $file->source = $source;
+        $file->type_id = $typeId;
+        $file->created_user_id = $user->id;
+        $file->deleted = self::STATUS_ACTIVE;
+        $file->created_at = new Expression('CURRENT_TIMESTAMP');
+
+        return $file;
     }
 
     /**

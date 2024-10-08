@@ -73,11 +73,11 @@ class Locality extends ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
-            'region_id' => 'Region ID',
-            'deleted' => 'Deleted',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
+            'name' => 'Название',
+            'region_id' => 'Регион',
+            'deleted' => 'Удалено',
+            'created_at' => 'Дата создания',
+            'updated_at' => 'Дата обновления',
         ];
     }
 

@@ -11,6 +11,7 @@ use yii\bootstrap5\Nav;
 use yii\bootstrap5\NavBar;
 
 AppAsset::register($this);
+\yii\bootstrap5\BootstrapAsset::register($this);
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
@@ -36,6 +37,83 @@ AppAsset::register($this);
     ]);
     $menuItems = [
         ['label' => 'Home', 'url' => ['/site/index']],
+        [
+            'label' => 'Пользователи',
+            'dropDownOptions' => ['class' => 'dropdown-menu'],
+            'items' => [
+                [
+                    'label' => 'Пользователи',
+                    'url' => ['/user/index'],
+                ],
+                [
+                    'label' => 'Роли',
+                    'url' => ['/role/index'],
+                ],
+                [
+                    'label' => 'Расписание',
+                    'url' => ['/user-schedule/index'],
+                ]
+            ]
+        ],
+        [
+            'label' => 'Заявки',
+            'dropDownOptions' => ['class' => 'dropdown-menu'],
+            'items' => [
+                [
+                    'label' => 'Заявки',
+                    'url' => ['/ticket/index'],
+                ],
+                [
+                    'label' => 'Статусы',
+                    'url' => ['/ticket-status/index'],
+                ],
+                [
+                    'label' => 'Типы',
+                    'url' => ['/ticket-type/index'],
+                ],
+            ],
+        ],
+        ['label' => 'Новости', 'url' => ['/news/index']],
+        [
+            'label' => 'Локация',
+            'dropDownOptions' => ['class' => 'dropdown-menu'],
+            'items' => [
+                [
+                    'label' => 'Регионы',
+                    'url' => ['/region/index'],
+                ],
+                [
+                    'label' => 'Населенные пункты',
+                    'url' => ['/locality/index'],
+                ],
+                [
+                    'label' => 'Улицы',
+                    'url' => ['/street/index'],
+                ],
+                [
+                    'label' => 'Дома',
+                    'url' => ['/house/index'],
+                ],
+                [
+                    'label' => 'Квартиры',
+                    'url' => ['/apartment/index'],
+                ]
+            ],
+        ],
+        [
+            'label' => 'Общие',
+            'dropDownOptions' => ['class' => 'dropdown-menu'],
+            'items' => [
+                [
+                    'label' => 'Типы файлов',
+                    'url' => ['/file-type/index'],
+                ],
+                [
+                    'label' => 'Типы нотификаций',
+                    'url' => ['/notification-type/index'],
+                ]
+            ],
+        ],
     ];
     if (Yii::$app->user->isGuest) {
         $menuItems[] = ['label' => 'Войти', 'url' => ['/site/login']];
@@ -67,13 +145,6 @@ AppAsset::register($this);
         <?= $content ?>
     </div>
 </main>
-
-<footer class="footer mt-auto py-3 text-muted">
-    <div class="container">
-        <p class="float-start">&copy; <?= Html::encode(Yii::$app->name) ?> <?= date('Y') ?></p>
-        <p class="float-end"><?= Yii::powered() ?></p>
-    </div>
-</footer>
 
 <?php $this->endBody() ?>
 </body>

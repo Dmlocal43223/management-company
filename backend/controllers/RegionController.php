@@ -2,17 +2,18 @@
 
 namespace backend\controllers;
 
-use src\role\entities\Role;
-use backend\search\RoleSearch;
+use src\location\entities\Region;
+use backend\forms\RegionSearch;
+use src\location\repositories\RegionRepository;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\Response;
 
 /**
- * RoleController implements the CRUD actions for Role model.
+ * RegionController implements the CRUD actions for Region model.
  */
-class RoleController extends Controller
+class RegionController extends Controller
 {
     /**
      * @inheritDoc
@@ -33,13 +34,13 @@ class RoleController extends Controller
     }
 
     /**
-     * Lists all Role models.
+     * Lists all Region models.
      *
      * @return string
      */
     public function actionIndex(): string
     {
-        $searchModel = new RoleSearch();
+        $searchModel = new RegionSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
         return $this->render('index', [
@@ -49,12 +50,12 @@ class RoleController extends Controller
     }
 
     /**
-     * Displays a single Role model.
+     * Displays a single Region model.
      * @param int $id ID
      * @return string
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($id): string
+    public function actionView(int $id): string
     {
         return $this->render('view', [
             'model' => $this->findModel($id),
@@ -62,13 +63,13 @@ class RoleController extends Controller
     }
 
     /**
-     * Creates a new Role model.
+     * Creates a new Region model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return string|Response
      */
     public function actionCreate(): Response|string
     {
-        $model = new Role();
+        $model = new Region();
 
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
@@ -84,13 +85,13 @@ class RoleController extends Controller
     }
 
     /**
-     * Updates an existing Role model.
+     * Updates an existing Region model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param int $id ID
      * @return string|Response
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate($id): Response|string
+    public function actionUpdate(int $id): Response|string
     {
         $model = $this->findModel($id);
 
@@ -104,13 +105,13 @@ class RoleController extends Controller
     }
 
     /**
-     * Deletes an existing Role model.
+     * Deletes an existing Region model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param int $id ID
      * @return Response
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id): Response
+    public function actionDelete(int $id): Response
     {
         $this->findModel($id)->delete();
 
@@ -118,18 +119,20 @@ class RoleController extends Controller
     }
 
     /**
-     * Finds the Role model based on its primary key value.
+     * Finds the Region model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param int $id ID
-     * @return Role the loaded model
+     * @return Region the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id): Role
+    protected function findModel(int $id): Region
     {
-        if (($model = Role::findOne(['id' => $id])) !== null) {
-            return $model;
+        $region = (new RegionRepository())->findById($id);
+
+        if (!$region) {
+            throw new NotFoundHttpException('The requested page does not exist.');
         }
 
-        throw new NotFoundHttpException('The requested page does not exist.');
+        return $region;
     }
 }

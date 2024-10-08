@@ -6,7 +6,7 @@ use yii\helpers\Html;
 /** @var src\file\entities\FileType $model */
 
 $this->title = 'Создать тип файла';
-$this->params['breadcrumbs'][] = ['label' => 'File Types', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Типы файлов', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="file-type-create">

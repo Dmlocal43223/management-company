@@ -37,5 +37,16 @@ return [
             'port' => 6379,
             'database' => 0,
         ],
+        'formatter' => [
+            'class' => 'yii\i18n\Formatter',
+                'booleanFormat' => ['Нет', 'Да'],
+                'locale' => 'ru-RU',
+                'dateFormat' => 'php:d.m.Y',
+                'datetimeFormat' => 'php:d.m.Y H:i',
+                'timeFormat' => 'php:H:i',
+        ],
     ],
+    'modules' => [
+        'gridview' => ['class' => 'kartik\grid\Module']
+    ]
 ];
