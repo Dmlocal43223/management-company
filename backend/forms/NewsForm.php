@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace backend\forms;
 
-class NewsForm
+use yii\base\Model;
+class NewsForm extends Model
 {
     public $title;
     public $content;
-    public $previewImage;
-    public $photos;
-    public $documents;
+    public $deleted;
 
     public function rules(): array
     {
@@ -18,9 +17,16 @@ class NewsForm
             [['title', 'content'], 'required'],
             [['title'], 'string', 'max' => 255],
             [['content'], 'string'],
-            [['previewImage'], 'file', 'extensions' => 'png, jpg, jpeg', 'maxSize' => 1024 * 1024 * 2],
-            [['photos'], 'file', 'extensions' => 'png, jpg, jpeg', 'maxFiles' => 5, 'maxSize' => 1024 * 1024 * 2],
-            [['documents'], 'file', 'extensions' => 'pdf, doc, docx', 'maxFiles' => 5, 'maxSize' => 1024 * 1024 * 5],
+            [['deleted'], 'boolean']
+        ];
+    }
+
+    public function attributeLabels(): array
+    {
+        return [
+            'title' => 'Название',
+            'content' => 'Содержание',
+            'deleted' => 'Удалено',
         ];
     }
 }

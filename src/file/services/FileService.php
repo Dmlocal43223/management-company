@@ -13,57 +13,70 @@ use yii\web\UploadedFile;
 
 class FileService
 {
-    public const FILE_SOURCE_TYPE_MAPPING = [
+    public const FILE_TYPE_TO_DIRECTORY_MAPPING = [
         FileType::PHOTO_TYPE_ID => 'photos',
         FileType::PREVIEW_TYPE_ID => 'previews',
         FileType::DOCUMENT_TYPE_ID => 'documents',
     ];
-    private string $basePath;
 
-    public function __construct()
+    private string $basePath;
+    private FileRepository $fileRepository;
+
+    public function __construct(FileRepository $fileRepository)
     {
         $this->basePath = Yii::getAlias('@webroot');
+        $this->fileRepository = $fileRepository;
     }
 
     public function create(UploadedFile $file, int $fileTypeId): File
     {
-        $fileRepository = new FileRepository();
-        $path = 'uploads/' . self::FILE_SOURCE_TYPE_MAPPING[$fileTypeId];
-        $this->ensureDirectory($path);
-        $source = $this->uploadFile($file, $path);
-        $user = Yii::$app->user;
-        $file = File::create($source, $fileTypeId, $user);
+        $directoryPath = $this->getDirectoryPath($fileTypeId);
+        $this->ensureDirectory($directoryPath);
+        $source = $this->uploadFile($file, $directoryPath);
+        $user = Yii::$app->user->id;
 
-        $fileRepository->save($file);
+        $file = File::create($source, $fileTypeId, $user);
+        $this->fileRepository->save($file);
 
         return $file;
     }
 
-    public function uploadFile(UploadedFile $file, string $path): string
+    public function uploadFile(UploadedFile $file, string $directoryPath): string
     {
-        $filePath = $this->generateFilePath($file, $path);
+        $filePath = $this->generateFilePath($file, $directoryPath);
 
         if (!$file->saveAs($filePath)) {
-            throw new RuntimeException('Ошибка при сохранении файла.');
+            throw new RuntimeException("Ошибка при сохранении файла: {$file->name} в путь: {$filePath}");
         }
 
-        return $filePath;
+        $relativePath = str_replace(Yii::getAlias('@webroot'), '', $filePath);
+        return Yii::$app->request->hostInfo . $relativePath;
     }
 
-    private function generateFilePath(UploadedFile $file, string $path): string
+    private function generateFilePath(UploadedFile $file, string $directoryPath): string
     {
-        $fullPath = $this->basePath . '/' . $path;
-        $fileName = uniqid() . '.' . $file->extension;
+        $fullPath = $this->basePath . '/' . $directoryPath;
+        $fileName = uniqid('file_', true) . '.' . $file->extension;
 
         return $fullPath . '/' . $fileName;
     }
 
-    public function ensureDirectory(string $path): void
+    public function ensureDirectory(string $directoryPath): void
     {
-        $fullPath = $this->basePath . '/' . $path;
+        $fullPath = $this->basePath . '/' . $directoryPath;
 
         if (!is_dir($fullPath)) {
-            mkdir($fullPath, 0777, true);
+            if (!mkdir($fullPath, 0777, true) && !is_dir($fullPath)) {
+                throw new RuntimeException("Не удалось создать директорию: {$fullPath}");
+            }
         }
+    }
+
+    private function getDirectoryPath(int $fileTypeId): string
+    {
+        $directory = self::FILE_TYPE_TO_DIRECTORY_MAPPING[$fileTypeId]
+            ?? throw new RuntimeException("Ошибка при получении директории по типу файла {$fileTypeId}");
+
+        return 'uploads/' . $directory;
     }
 }

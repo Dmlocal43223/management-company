@@ -14,6 +14,8 @@ class m240930_201801_create_user_information_table extends Migration
     {
         $this->createTable('{{%user_information}}', [
             'id' => $this->primaryKey(),
+            'name' => $this->string()->notNull(),
+            'surname' => $this->string()->notNull(),
             'user_id' => $this->integer()->notNull(),
             'telegram_id' => $this->string()->null(),
             'avatar_file_id' => $this->integer()->null(),

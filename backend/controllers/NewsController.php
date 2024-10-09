@@ -2,8 +2,19 @@
 
 namespace backend\controllers;
 
-use backend\search\NewsSearch;
+use backend\forms\NewsFileForm;
+use backend\forms\NewsForm;
+use backend\forms\search\NewsSearchForm;
+use Exception;
+use src\file\repositories\FileRepository;
+use src\file\repositories\NewsFileRepository;
+use src\file\services\FileService;
 use src\news\entities\News;
+use src\news\repositories\NewsRepository;
+use src\news\services\NewsService;
+use Yii;
+use yii\data\ActiveDataProvider;
+use yii\data\ArrayDataProvider;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -14,6 +25,26 @@ use yii\web\Response;
  */
 class NewsController extends Controller
 {
+    private NewsService $newsService;
+    private NewsRepository $newsRepository;
+
+    public function __construct($id, $module, $config = [])
+    {
+        $this->newsRepository = new NewsRepository();
+        $fileRepository = new FileRepository();
+        $newsFileRepository = new NewsFileRepository();
+        $fileService = new FileService($fileRepository);
+
+        $this->newsService = new NewsService(
+            $fileService,
+            $this->newsRepository,
+            $newsFileRepository,
+            $fileRepository
+        );
+
+        parent::__construct($id, $module, $config);
+    }
+
     /**
      * @inheritDoc
      */
@@ -39,8 +70,18 @@ class NewsController extends Controller
      */
     public function actionIndex(): string
     {
-        $searchModel = new NewsSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
+        $searchModel = new NewsSearchForm();
+        $searchModel->load($this->request->queryParams);
+
+        if (!$searchModel->validate()) {
+            $query = $this->newsRepository->getNoResultsQuery();
+        } else {
+            $query = $this->newsRepository->getFilteredQuery($searchModel);
+        }
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -56,8 +97,18 @@ class NewsController extends Controller
      */
     public function actionView(int $id): string
     {
+        $model = $this->findModel($id);
+        $fileModel = new NewsFileForm();
+
+        $fileDataProvider = new ArrayDataProvider([
+            'allModels' => (new NewsFileRepository())->findFilesByNews($model),
+            'pagination' => false
+        ]);
+
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $model,
+            'fileModel' => $fileModel,
+            'fileDataProvider' => $fileDataProvider
         ]);
     }
 
@@ -68,18 +119,25 @@ class NewsController extends Controller
      */
     public function actionCreate(): Response|string
     {
-        $model = new News();
+        $newsModel = new NewsForm();
+        $fileModel = new NewsFileForm();
 
-        if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+        if ($newsModel->load(Yii::$app->request->post()) && $fileModel->load(Yii::$app->request->post())) {
+            $fileModel->setUploadedFiles();
+            if ($newsModel->validate() && $fileModel->validate()) {
+                try {
+                    $news = $this->newsService->create($newsModel, $fileModel);
+
+                    return $this->redirect(['view', 'id' => $news->id]);
+                } catch (Exception $exception) {
+                    Yii::$app->session->setFlash('error', $exception->getMessage());
+                }
             }
-        } else {
-            $model->loadDefaultValues();
         }
 
         return $this->render('create', [
-            'model' => $model,
+            'newsModel' => $newsModel,
+            'fileModel' => $fileModel,
         ]);
     }
 
@@ -92,14 +150,25 @@ class NewsController extends Controller
      */
     public function actionUpdate(int $id): Response|string
     {
-        $model = $this->findModel($id);
+        $news = $this->findModel($id);
+        $form = new NewsForm();
+        $form->setAttributes($news->getAttributes());
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($form->load(Yii::$app->request->post())) {
+            if ($form->validate()) {
+                try {
+                    $this->newsService->edit($news, $form);
+
+                    return $this->redirect(['view', 'id' => $news->id]);
+                } catch (Exception $exception) {
+                    Yii::$app->session->setFlash('error', $exception->getMessage());
+                }
+            }
         }
 
         return $this->render('update', [
-            'model' => $model,
+            'news' => $news,
+            'newsModel' => $form,
         ]);
     }
 
@@ -112,9 +181,49 @@ class NewsController extends Controller
      */
     public function actionDelete(int $id): Response
     {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
 
+        try {
+            $this->newsService->remove($model);
+        } catch (Exception $exception) {
+            Yii::$app->session->setFlash('error', $exception->getMessage());
+        }
         return $this->redirect(['index']);
+    }
+
+    /**
+     * @throws NotFoundHttpException
+     */
+    public function actionRestore(int $id): Response
+    {
+        $model = $this->findModel($id);
+
+        try {
+            $this->newsService->restore($model);
+        } catch (Exception $exception) {
+            Yii::$app->session->setFlash('error', $exception->getMessage());
+        }
+        return $this->redirect(['index']);
+    }
+
+    public function actionUpload(int $id): Response|string
+    {
+        $model = $this->findModel($id);
+        $fileModel = new NewsFileForm();
+
+        if ($fileModel->load(Yii::$app->request->post())) {
+            $fileModel->setUploadedFiles();
+            if ($fileModel->validate()) {
+                try {
+                    $this->newsService->uploadFile($model, $fileModel);
+                    Yii::$app->session->setFlash('success', 'Файлы успешно загружены.');
+                } catch (Exception $exception) {
+                    Yii::$app->session->setFlash('error', $exception->getMessage());
+                }
+            }
+        }
+
+        return $this->redirect(['view', 'id' => $id]);
     }
 
     /**
@@ -126,10 +235,12 @@ class NewsController extends Controller
      */
     protected function findModel(int $id): News
     {
-        if (($model = News::findOne(['id' => $id])) !== null) {
-            return $model;
+        $model = $this->newsRepository->findById($id);
+
+        if (!$model) {
+            throw new NotFoundHttpException('The requested page does not exist.');
         }
 
-        throw new NotFoundHttpException('The requested page does not exist.');
+        return $model;
     }
 }

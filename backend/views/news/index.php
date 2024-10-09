@@ -1,6 +1,6 @@
 <?php
 
-use backend\search\NewsSearch;
+use backend\forms\search\NewsSearchForm;
 use kartik\grid\GridView;
 use src\news\entities\News;
 use yii\grid\ActionColumn;
@@ -8,7 +8,7 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 
 /** @var yii\web\View $this */
-/** @var NewsSearch $searchModel */
+/** @var NewsSearchForm $searchModel */
 /** @var yii\data\ActiveDataProvider $dataProvider */
 
 $this->title = 'Новости';
@@ -26,19 +26,19 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            'id',
+            [
+                'attribute' => 'id',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return Html::a($model->id, ['view', 'id' => $model->id]);
+                },
+            ],
             'title',
             'content:ntext',
             'author_id',
             'deleted:boolean',
             'created_at',
             'updated_at',
-            [
-                'class' => ActionColumn::class,
-                'urlCreator' => function ($action, News $model, $key, $index, $column) {
-                    return Url::toRoute([$action, 'id' => $model->id]);
-                 }
-            ],
         ],
     ]); ?>
 

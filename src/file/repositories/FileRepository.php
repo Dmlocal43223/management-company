@@ -15,4 +15,22 @@ class FileRepository
             throw new RuntimeException('Ошибка сохранения.');
         }
     }
+
+    public function remove(File $file): void
+    {
+        $file->remove();
+
+        if (!$file->save()) {
+            throw new RuntimeException('Ошибка удаления.');
+        }
+    }
+
+    public function restore(File $file): void
+    {
+        $file->restore();
+
+        if (!$file->save()) {
+            throw new RuntimeException('Ошибка удаления.');
+        }
+    }
 }

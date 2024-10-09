@@ -3,7 +3,8 @@
 use yii\helpers\Html;
 
 /** @var yii\web\View $this */
-/** @var src\news\entities\News $model */
+/** @var src\news\entities\News $newsModel */
+/** @var backend\forms\NewsFileForm $fileModel */
 
 $this->title = 'Создать новость';
 $this->params['breadcrumbs'][] = ['label' => 'Новости', 'url' => ['index']];
@@ -14,7 +15,8 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <?= $this->render('_form', [
-        'model' => $model,
+        'newsModel' => $newsModel,
+        'fileModel' => $fileModel,
     ]) ?>
 
 </div>

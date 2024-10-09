@@ -6,6 +6,7 @@ namespace src\news\entities;
 
 use src\file\entities\NewsFile;
 use src\user\entities\User;
+use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -93,10 +94,36 @@ class News extends ActiveRecord
         $news = new static();
         $news->title = $title;
         $news->content = $content;
+        $news->author_id = Yii::$app->user->id;
         $news->deleted = static::STATUS_ACTIVE;
         $news->created_at = new Expression('CURRENT_TIMESTAMP');
 
         return $news;
+    }
+
+    public function edit(string $title, string $content, bool $isDeleted): void
+    {
+        $this->title = $title;
+        $this->content = $content;
+
+        if ($isDeleted) {
+            $this->remove();
+        }
+    }
+
+    public function remove(): void
+    {
+        $this->deleted = self::STATUS_DELETED;
+    }
+
+    public function restore(): void
+    {
+        $this->deleted = self::STATUS_ACTIVE;
+    }
+
+    public function isDeleted(): bool
+    {
+        return $this->deleted;
     }
 
     /**

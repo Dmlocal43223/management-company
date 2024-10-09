@@ -16,6 +16,8 @@ class m240928_193418_create_file_table extends Migration
             'id' => $this->primaryKey(),
             'source' => $this->string(2048)->notNull(),
             'type_id' => $this->integer()->notNull(),
+            'hash' => $this->string(64)->notNull(),
+            'size' => $this->integer()->notNull(),
             'created_user_id' => $this->integer()->notNull(),
             'deleted' => $this->boolean()->notNull()->defaultValue(false),
             'created_at' => $this->dateTime()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),

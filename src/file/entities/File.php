@@ -90,16 +90,26 @@ class File extends ActiveRecord
         ];
     }
 
-    public static function create(string $source, int $typeId, User $user): static
+    public static function create(string $source, int $typeId, int $userId): static
     {
         $file = new static();
         $file->source = $source;
         $file->type_id = $typeId;
-        $file->created_user_id = $user->id;
+        $file->created_user_id = $userId;
         $file->deleted = self::STATUS_ACTIVE;
         $file->created_at = new Expression('CURRENT_TIMESTAMP');
 
         return $file;
+    }
+
+    public function remove(): void
+    {
+        $this->deleted = self::STATUS_DELETED;
+    }
+
+    public function restore(): void
+    {
+        $this->deleted = self::STATUS_ACTIVE;
     }
 
     /**
