@@ -80,6 +80,13 @@ class User extends ActiveRecord implements IdentityInterface
         ];
     }
 
+    public function getFullName(): string
+    {
+        $userInformation = UserInformation::findOne(['user_id' => $this->id]);
+
+        return $userInformation ? "{$userInformation->name} {$userInformation->surname}" : $this->username;
+    }
+
     /**
      * {@inheritdoc}
      */

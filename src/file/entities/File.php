@@ -18,6 +18,8 @@ use yii\db\Expression;
  * @property int $id
  * @property string $source
  * @property int $type_id
+ * @property string $hash
+ * @property int $size
  * @property int $created_user_id
  * @property bool $deleted
  * @property string $created_at
@@ -65,10 +67,11 @@ class File extends ActiveRecord
         return [
             [['source', 'type_id', 'created_user_id'], 'required'],
             [['type_id', 'created_user_id'], 'default', 'value' => null],
-            [['type_id', 'created_user_id'], 'integer'],
+            [['type_id', 'created_user_id', 'size'], 'integer'],
             [['deleted'], 'boolean'],
             [['created_at', 'updated_at'], 'safe'],
             [['source'], 'string', 'max' => 2048],
+            [['hash'], 'string', 'max' => 64],
             [['type_id'], 'exist', 'skipOnError' => true, 'targetClass' => FileType::class, 'targetAttribute' => ['type_id' => 'id']],
             [['created_user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['created_user_id' => 'id']],
         ];
@@ -82,6 +85,8 @@ class File extends ActiveRecord
         return [
             'id' => 'ID',
             'source' => 'Источник',
+            'hash' => 'Код',
+            'size' => 'Размер',
             'type_id' => 'Тип',
             'created_user_id' => 'Пользователь',
             'deleted' => 'Удалено',
@@ -90,10 +95,12 @@ class File extends ActiveRecord
         ];
     }
 
-    public static function create(string $source, int $typeId, int $userId): static
+    public static function create(string $source, string $hash, int $size, int $typeId, int $userId): static
     {
         $file = new static();
         $file->source = $source;
+        $file->hash = $hash;
+        $file->size = $size;
         $file->type_id = $typeId;
         $file->created_user_id = $userId;
         $file->deleted = self::STATUS_ACTIVE;
@@ -110,6 +117,11 @@ class File extends ActiveRecord
     public function restore(): void
     {
         $this->deleted = self::STATUS_ACTIVE;
+    }
+
+    public function isDeleted(): bool
+    {
+        return $this->deleted;
     }
 
     /**

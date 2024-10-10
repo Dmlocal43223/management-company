@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace src\file\repositories;
 
-use RuntimeException;
-use src\file\entities\File;
 use src\file\entities\NewsFile;
 use src\news\entities\News;
+use yii\db\Exception;
 
 class NewsFileRepository
 {
@@ -15,7 +14,7 @@ class NewsFileRepository
     {
         if (!$newsFile->save()) {
             $errors = implode(', ', $newsFile->getErrors());
-            throw new RuntimeException("Ошибка сохранения {$errors}.");
+            throw new Exception("Ошибка сохранения {$errors}.");
         }
     }
 

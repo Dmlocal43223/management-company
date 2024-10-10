@@ -9,18 +9,13 @@ use yii\helpers\Url;
 $url = Url::to(['view', 'id' => $model->id]);
 ?>
 
-<div class="blog-news-item">
-<!--    --><?php //if ($model->photo): ?>
-<!--        <div>-->
-<!--            <a href="--><?php //= Html::encode($url) ?><!--">-->
-<!--                <img src="--><?php //= Html::encode($model->getThumbFileUrl('photo', 'blog_list')) ?><!--" alt=""-->
-<!--                     class="img-responsive"/>-->
-<!--            </a>-->
-<!--        </div>-->
-<!--    --><?php //endif; ?>
-    <div class="h2"><a href="<?= Html::encode($url) ?>"><?= Html::encode($model->title) ?></a></div>
-    <p class="text-muted small"><?= yii::$app->formatter->asDatetime($model->created_at); ?></p>
-
+<div class="news-item">
+    <div class="news-preview">
+        <img src="<?= Html::encode('http://localhost:21080/uploads/previews/file_6706fc6c162cc7.04947104.png') ?>" alt="Preview" class="news-preview-image">
+    </div>
+    <div class="news-title">
+        <h2><a href="<?= Html::encode($url) ?>"><?= Html::encode($model->title) ?></a></h2>
+        <p class="text-muted small"><?= yii::$app->formatter->asDatetime($model->created_at); ?></p>
+    </div>
 </div>
-
 

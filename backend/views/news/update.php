@@ -4,7 +4,7 @@ use yii\helpers\Html;
 
 /** @var yii\web\View $this */
 /** @var src\news\entities\News $news */
-/** @var backend\forms\NewsForm $newsModel */
+/** @var backend\forms\NewsForm $newsForm */
 
 $this->title = 'Обновить новость: ' . $news->title;
 $this->params['breadcrumbs'][] = ['label' => 'Новости', 'url' => ['index']];
@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = 'Обновить';
     <h1><?= Html::encode($this->title) ?></h1>
 
     <?= $this->render('_form', [
-        'newsModel' => $newsModel,
+        'newsForm' => $newsForm,
     ]) ?>
 
 </div>

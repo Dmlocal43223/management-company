@@ -15,6 +15,8 @@ use yii\db\Expression;
  * This is the model class for table "user_information".
  *
  * @property int $id
+ * @property string $name
+ * @property string $surname
  * @property int $user_id
  * @property string|null $telegram_id
  * @property int|null $avatar_file_id
@@ -61,7 +63,7 @@ class UserInformation extends ActiveRecord
             [['user_id', 'avatar_file_id'], 'default', 'value' => null],
             [['user_id', 'avatar_file_id'], 'integer'],
             [['created_at', 'updated_at'], 'safe'],
-            [['telegram_id'], 'string', 'max' => 255],
+            [['name', 'surname', 'telegram_id'], 'string', 'max' => 255],
             [['avatar_file_id'], 'exist', 'skipOnError' => true, 'targetClass' => File::class, 'targetAttribute' => ['avatar_file_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
         ];

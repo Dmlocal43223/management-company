@@ -6,9 +6,15 @@ namespace src\file\repositories;
 
 use RuntimeException;
 use src\file\entities\File;
+use src\news\entities\News;
 
 class FileRepository
 {
+    public function findById(int $id): ?File
+    {
+        return File::findOne($id);
+    }
+
     public function save(File $file): void
     {
         if (!$file->save()) {
@@ -32,5 +38,13 @@ class FileRepository
         if (!$file->save()) {
             throw new RuntimeException('Ошибка удаления.');
         }
+    }
+
+    public function existsByHashAndNews(News $news, string $hash): bool
+    {
+        return File::find()
+            ->innerJoin('news_file', "news_file.file_id = file.id and news_file.news_id = {$news->id}")
+            ->andWhere(['file.hash' => $hash])
+            ->exists();
     }
 }

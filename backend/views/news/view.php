@@ -8,7 +8,7 @@ use yii\widgets\DetailView;
 
 /** @var yii\web\View $this */
 /** @var src\news\entities\News $model */
-/** @var backend\forms\NewsFileForm $fileModel */
+/** @var backend\forms\NewsFileForm $fileForm */
 /** @var ArrayDataProvider $fileDataProvider */
 
 $this->title = $model->title;
@@ -84,7 +84,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Тип файла',
                 'attribute' => 'type',
                 'value' => function($model) {
-                    return $model->file->type->name;
+                    return $model->file->type->name ?? 'Тип неизвестен';
                 },
             ],
             [
@@ -99,13 +99,23 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Действия',
                 'format' => 'raw',
                 'value' => function($model) {
-                    return Html::a('Удалить', ['file/delete', 'id' => $model->id], [
-                        'class' => 'btn btn-danger',
-                        'data' => [
-                            'confirm' => 'Вы уверены, что хотите удалить этот файл?',
-                            'method' => 'post',
-                        ],
-                    ]);
+                    if ($model->file->isDeleted()) {
+                        return Html::a('Восстановить', ['file/restore', 'id' => $model->id], [
+                            'class' => 'btn btn-success',
+                            'data' => [
+                                'confirm' => 'Вы уверены, что хотите восстановить этот файл?',
+                                'method' => 'post',
+                            ],
+                        ]);
+                    } else {
+                        return Html::a('Удалить', ['file/delete', 'id' => $model->id], [
+                            'class' => 'btn btn-danger',
+                            'data' => [
+                                'confirm' => 'Вы уверены, что хотите удалить этот файл?',
+                                'method' => 'post',
+                            ],
+                        ]);
+                    }
                 },
             ],
         ],
@@ -121,7 +131,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="modal-body">
                     <?php $form = ActiveForm::begin(['action' => ['news/upload', 'id' => $model->id], 'options' => ['enctype' => 'multipart/form-data']]); ?>
                     <div class="upload-form">
-                        <?= $this->render('_uploadForm', ['form' => $form, 'fileModel' => $fileModel]) ?>
+                        <?= $this->render('_uploadForm', ['form' => $form, 'fileForm' => $fileForm]) ?>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -136,44 +146,44 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <?php
 $script = <<< JS
+function previewFiles(inputSelector, containerSelector, isImage = false) {
+    $(inputSelector).off('change').on('change', function(event) { 
+        $(containerSelector).empty();
+        var files = event.target.files;
+        if (files.length > 0) {
+            for (var i = 0; i < files.length; i++) {
+                if (isImage) {
+                    var reader = new FileReader();
+                    reader.onload = (function(file) {
+                        return function(e) {
+                            $(containerSelector).append('<img src="' + e.target.result + '" alt="' + file.name + '" style="max-width: 100px; margin: 10px;"/>');
+                        };
+                    })(files[i]);
+                    reader.readAsDataURL(files[i]);
+                } else {
+                    $(containerSelector).append('<div>' + files[i].name + '</div>');
+                }
+            }
+        }
+    });
+}
+
+function toggleSubmitButton() {
+    const submitButton = $('#uploadModal .btn-primary');
+    const filesInput = $('#photosInput')[0];
+    submitButton.prop('disabled', !filesInput.files.length);
+}
+
 $(document).ready(function() {
-    $('#previewImageInput').change(function(event) {
-        $('#previewImageContainer').empty();
-        var files = event.target.files;
-        if (files.length > 0) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                $('#previewImageContainer').append('<img src="' + e.target.result + '" alt="Preview Image" style="max-width: 200px; margin-top: 10px;"/>');
-            }
-            reader.readAsDataURL(files[0]);
-        }
+    previewFiles('#previewImageInput', '#previewImageContainer', true);
+    previewFiles('#photosInput', '#photosPreviewContainer', true);
+    previewFiles('#documentsInput', '#documentsContainer', false);
+    
+    $('#photosInput').change(function() {
+        toggleSubmitButton();
     });
 
-    $('#photosInput').change(function(event) {
-        $('#photosPreviewContainer').empty();
-        var files = event.target.files;
-        if (files.length > 0) {
-            for (var i = 0; i < files.length; i++) {
-                var reader = new FileReader();
-                reader.onload = (function(file) {
-                    return function(e) {
-                        $('#photosPreviewContainer').append('<img src="' + e.target.result + '" alt="' + file.name + '" style="max-width: 100px; margin: 10px;"/>');
-                    };
-                })(files[i]);
-                reader.readAsDataURL(files[i]);
-            }
-        }
-    });
-
-    $('#documentsInput').change(function(event) {
-        $('#documentsContainer').empty();
-        var files = event.target.files;
-        if (files.length > 0) {
-            for (var i = 0; i < files.length; i++) {
-                $('#documentsContainer').append('<div>' + files[i].name + '</div>');
-            }
-        }
-    });
+    toggleSubmitButton();
 });
 JS;
 $this->registerJs($script);

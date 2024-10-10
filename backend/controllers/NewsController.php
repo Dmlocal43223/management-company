@@ -16,6 +16,7 @@ use Yii;
 use yii\data\ActiveDataProvider;
 use yii\data\ArrayDataProvider;
 use yii\filters\VerbFilter;
+use yii\helpers\Html;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
@@ -98,7 +99,7 @@ class NewsController extends Controller
     public function actionView(int $id): string
     {
         $model = $this->findModel($id);
-        $fileModel = new NewsFileForm();
+        $fileForm = new NewsFileForm();
 
         $fileDataProvider = new ArrayDataProvider([
             'allModels' => (new NewsFileRepository())->findFilesByNews($model),
@@ -107,7 +108,7 @@ class NewsController extends Controller
 
         return $this->render('view', [
             'model' => $model,
-            'fileModel' => $fileModel,
+            'fileForm' => $fileForm,
             'fileDataProvider' => $fileDataProvider
         ]);
     }
@@ -119,14 +120,14 @@ class NewsController extends Controller
      */
     public function actionCreate(): Response|string
     {
-        $newsModel = new NewsForm();
-        $fileModel = new NewsFileForm();
+        $newsForm = new NewsForm();
+        $fileForm = new NewsFileForm();
 
-        if ($newsModel->load(Yii::$app->request->post()) && $fileModel->load(Yii::$app->request->post())) {
-            $fileModel->setUploadedFiles();
-            if ($newsModel->validate() && $fileModel->validate()) {
+        if ($newsForm->load(Yii::$app->request->post()) && $fileForm->load(Yii::$app->request->post())) {
+            $fileForm->setUploadedFiles();
+            if ($newsForm->validate() && $fileForm->validate()) {
                 try {
-                    $news = $this->newsService->create($newsModel, $fileModel);
+                    $news = $this->newsService->create($newsForm, $fileForm);
 
                     return $this->redirect(['view', 'id' => $news->id]);
                 } catch (Exception $exception) {
@@ -136,8 +137,8 @@ class NewsController extends Controller
         }
 
         return $this->render('create', [
-            'newsModel' => $newsModel,
-            'fileModel' => $fileModel,
+            'newsForm' => $newsForm,
+            'fileForm' => $fileForm,
         ]);
     }
 
@@ -151,24 +152,22 @@ class NewsController extends Controller
     public function actionUpdate(int $id): Response|string
     {
         $news = $this->findModel($id);
-        $form = new NewsForm();
-        $form->setAttributes($news->getAttributes());
+        $newsForm = new NewsForm();
+        $newsForm->setAttributes($news->getAttributes());
 
-        if ($form->load(Yii::$app->request->post())) {
-            if ($form->validate()) {
-                try {
-                    $this->newsService->edit($news, $form);
+        if ($newsForm->load(Yii::$app->request->post()) && $newsForm->validate()) {
+            try {
+                $this->newsService->edit($news, $newsForm);
 
-                    return $this->redirect(['view', 'id' => $news->id]);
-                } catch (Exception $exception) {
-                    Yii::$app->session->setFlash('error', $exception->getMessage());
-                }
+                return $this->redirect(['view', 'id' => $news->id]);
+            } catch (Exception $exception) {
+                Yii::$app->session->setFlash('error', $exception->getMessage());
             }
         }
 
         return $this->render('update', [
             'news' => $news,
-            'newsModel' => $form,
+            'newsForm' => $newsForm,
         ]);
     }
 
@@ -185,6 +184,7 @@ class NewsController extends Controller
 
         try {
             $this->newsService->remove($model);
+            Yii::$app->session->setFlash('success', 'Запись успешно удалена.');
         } catch (Exception $exception) {
             Yii::$app->session->setFlash('error', $exception->getMessage());
         }
@@ -200,6 +200,7 @@ class NewsController extends Controller
 
         try {
             $this->newsService->restore($model);
+            Yii::$app->session->setFlash('success', 'Запись успешно восстановлена.'); // Сообщение об успехе
         } catch (Exception $exception) {
             Yii::$app->session->setFlash('error', $exception->getMessage());
         }
@@ -220,6 +221,8 @@ class NewsController extends Controller
                 } catch (Exception $exception) {
                     Yii::$app->session->setFlash('error', $exception->getMessage());
                 }
+            } else {
+                Yii::$app->session->setFlash('error', 'Ошибка валидации: ' . Html::errorSummary($fileModel));
             }
         }
 

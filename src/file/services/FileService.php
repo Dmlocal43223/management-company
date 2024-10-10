@@ -28,14 +28,15 @@ class FileService
         $this->fileRepository = $fileRepository;
     }
 
-    public function create(UploadedFile $file, int $fileTypeId): File
+    public function create(UploadedFile $file, string $hash, int $fileTypeId): File
     {
         $directoryPath = $this->getDirectoryPath($fileTypeId);
         $this->ensureDirectory($directoryPath);
+        $size = filesize($file->tempName);
         $source = $this->uploadFile($file, $directoryPath);
         $user = Yii::$app->user->id;
 
-        $file = File::create($source, $fileTypeId, $user);
+        $file = File::create($source, $hash, $size, $fileTypeId, $user);
         $this->fileRepository->save($file);
 
         return $file;
@@ -75,7 +76,7 @@ class FileService
     private function getDirectoryPath(int $fileTypeId): string
     {
         $directory = self::FILE_TYPE_TO_DIRECTORY_MAPPING[$fileTypeId]
-            ?? throw new RuntimeException("Ошибка при получении директории по типу файла {$fileTypeId}");
+            ?? throw new RuntimeException("Ошибка получения директории по типу файла {$fileTypeId}");
 
         return 'uploads/' . $directory;
     }

@@ -2,10 +2,8 @@
 
 use backend\forms\search\NewsSearchForm;
 use kartik\grid\GridView;
-use src\news\entities\News;
-use yii\grid\ActionColumn;
 use yii\helpers\Html;
-use yii\helpers\Url;
+use yii\helpers\StringHelper;
 
 /** @var yii\web\View $this */
 /** @var NewsSearchForm $searchModel */
@@ -34,7 +32,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 },
             ],
             'title',
-            'content:ntext',
+            [
+                'attribute' => 'content',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return StringHelper::truncate(Html::encode($model->content), 250, '...');
+                },
+            ],
             'author_id',
             'deleted:boolean',
             'created_at',

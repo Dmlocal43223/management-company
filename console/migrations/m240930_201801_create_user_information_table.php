@@ -26,7 +26,8 @@ class m240930_201801_create_user_information_table extends Migration
         $this->createIndex(
             'idx-user_information-user_id',
             '{{%user_information}}',
-            'user_id'
+            'user_id',
+            true
         );
 
         $this->addForeignKey(

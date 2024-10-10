@@ -37,8 +37,8 @@ class NewsFileForm extends Model
             });
         }
 
-        if (is_array($this->documents)) {
-            $this->documents = array_filter($this->documents, function ($file) {
+        if (is_array($this->photos)) {
+            $this->photos = array_filter($this->photos, function ($file) {
                 return $file instanceof UploadedFile && !empty($file->name);
             });
         }

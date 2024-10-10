@@ -101,8 +101,30 @@ a.desc:after {
 {
     text-decoration: none;
 }
-.blog-news-item {
+
+.news-item {
+    display: flex;
+    align-items: flex-start;
     margin: 20px 0;
     padding: 20px 0;
     border-top: 1px solid #eee;
+}
+
+.news-preview {
+    margin-right: 25px; /* Отступ между изображением и заголовком */
+}
+
+.news-preview-image {
+    width: 100%; /* Изображение будет занимать всю доступную ширину контейнера */
+    max-width: 150px; /* Максимальная ширина изображения */
+    height: auto; /* Высота будет автоматически подстраиваться */
+    /*width: 100px; !* Установите желаемую ширину *!*/
+    /*height: 100px; !* Установите желаемую высоту *!*/
+    object-fit: cover; /* Обеспечивает правильное отображение изображения */
+}
+
+.news-title {
+    flex: 1; /* Позволяет заголовку занимать оставшееся пространство */
+    margin-top: 3px; /* Отступ сверху для названия */
+
 }

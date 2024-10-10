@@ -61,6 +61,12 @@ class m240928_193418_create_file_table extends Migration
             '{{%file}}',
             'deleted'
         );
+
+        $this->createIndex(
+            '{{%idx-file-hash}}',
+            '{{%file}}',
+            'hash'
+        );
     }
 
     /**
@@ -68,6 +74,11 @@ class m240928_193418_create_file_table extends Migration
      */
     public function safeDown()
     {
+        $this->dropIndex(
+            '{{%idx-file-hash}}',
+            '{{%file}}'
+        );
+
         $this->dropIndex(
             '{{%idx-file-deleted}}',
             '{{%file}}'

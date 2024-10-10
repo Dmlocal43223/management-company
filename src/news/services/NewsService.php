@@ -7,6 +7,7 @@ namespace src\news\services;
 use backend\forms\NewsFileForm;
 use backend\forms\NewsForm;
 use Exception;
+use RuntimeException;
 use src\file\entities\File;
 use src\file\entities\FileType;
 use src\file\entities\NewsFile;
@@ -134,7 +135,13 @@ class NewsService
 
     private function handleFileUpload(News $news, UploadedFile $file, int $fileTypeId): void
     {
-        $file = $this->fileService->create($file, $fileTypeId);
+        $hash = hash_file('sha256', $file->tempName);
+
+        if ($this->fileRepository->existsByHashAndNews($news, $hash)) {
+            throw new RuntimeException("Файл {$file->baseName} уже загружен.");
+        }
+
+        $file = $this->fileService->create($file, $hash, $fileTypeId);
         $newsFile = NewsFile::create($news, $file);
 
         $this->newsFileRepository->save($newsFile);
