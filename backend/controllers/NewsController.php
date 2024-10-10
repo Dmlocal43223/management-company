@@ -28,19 +28,20 @@ class NewsController extends Controller
 {
     private NewsService $newsService;
     private NewsRepository $newsRepository;
+    private FileRepository $fileRepository;
 
     public function __construct($id, $module, $config = [])
     {
         $this->newsRepository = new NewsRepository();
-        $fileRepository = new FileRepository();
+        $this->fileRepository = new FileRepository();
         $newsFileRepository = new NewsFileRepository();
-        $fileService = new FileService($fileRepository);
+        $fileService = new FileService($this->fileRepository);
 
         $this->newsService = new NewsService(
             $fileService,
             $this->newsRepository,
             $newsFileRepository,
-            $fileRepository
+            $this->fileRepository
         );
 
         parent::__construct($id, $module, $config);
@@ -102,7 +103,7 @@ class NewsController extends Controller
         $fileForm = new NewsFileForm();
 
         $fileDataProvider = new ArrayDataProvider([
-            'allModels' => (new NewsFileRepository())->findFilesByNews($model),
+            'allModels' => $this->fileRepository->findFilesByNews($model),
             'pagination' => false
         ]);
 
@@ -216,7 +217,7 @@ class NewsController extends Controller
             $fileModel->setUploadedFiles();
             if ($fileModel->validate()) {
                 try {
-                    $this->newsService->uploadFile($model, $fileModel);
+                    $this->newsService->saveFiles($model, $fileModel);
                     Yii::$app->session->setFlash('success', 'Файлы успешно загружены.');
                 } catch (Exception $exception) {
                     Yii::$app->session->setFlash('error', $exception->getMessage());

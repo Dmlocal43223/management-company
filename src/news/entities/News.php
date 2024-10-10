@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace src\news\entities;
 
+use src\file\entities\File;
+use src\file\entities\FileType;
 use src\file\entities\NewsFile;
 use src\user\entities\User;
 use Yii;
@@ -26,6 +28,7 @@ use yii\db\Expression;
  *
  * @property User $author
  * @property NewsFile[] $newsFiles
+ * @property File $previewFile
  */
 class News extends ActiveRecord
 {
@@ -145,4 +148,12 @@ class News extends ActiveRecord
     {
         return $this->hasMany(NewsFile::class, ['news_id' => 'id']);
     }
+
+    public function getPreviewFile(): ActiveQuery
+    {
+        return $this->hasOne(File::class, ['id' => 'file_id'])
+            ->via('newsFiles')
+            ->where(['type_id' => FileType::PREVIEW_TYPE_ID]);
+    }
+
 }

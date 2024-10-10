@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace src\file\services;
 
+use Exception;
 use RuntimeException;
 use src\file\entities\File;
 use src\file\entities\FileType;
@@ -31,13 +32,19 @@ class FileService
     public function create(UploadedFile $file, string $hash, int $fileTypeId): File
     {
         $directoryPath = $this->getDirectoryPath($fileTypeId);
-        $this->ensureDirectory($directoryPath);
         $size = filesize($file->tempName);
         $source = $this->uploadFile($file, $directoryPath);
         $user = Yii::$app->user->id;
-
         $file = File::create($source, $hash, $size, $fileTypeId, $user);
-        $this->fileRepository->save($file);
+
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            $this->fileRepository->save($file);
+            $transaction->commit();
+        } catch (Exception $exception) {
+            $transaction->rollBack();
+            throw $exception;
+        }
 
         return $file;
     }
@@ -56,19 +63,18 @@ class FileService
 
     private function generateFilePath(UploadedFile $file, string $directoryPath): string
     {
-        $fullPath = $this->basePath . '/' . $directoryPath;
+        $fullPath = $this->basePath . '/' . $directoryPath . '/' . date('Y/m/d');
         $fileName = uniqid('file_', true) . '.' . $file->extension;
+        $this->ensureDirectory($fullPath);
 
         return $fullPath . '/' . $fileName;
     }
 
-    public function ensureDirectory(string $directoryPath): void
+    public function ensureDirectory(string $path): void
     {
-        $fullPath = $this->basePath . '/' . $directoryPath;
-
-        if (!is_dir($fullPath)) {
-            if (!mkdir($fullPath, 0777, true) && !is_dir($fullPath)) {
-                throw new RuntimeException("Не удалось создать директорию: {$fullPath}");
+        if (!is_dir($path)) {
+            if (!mkdir($path, 0777, true) && !is_dir($path)) {
+                throw new RuntimeException("Не удалось создать директорию: {$path}");
             }
         }
     }

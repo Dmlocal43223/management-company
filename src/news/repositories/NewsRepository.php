@@ -54,6 +54,11 @@ class NewsRepository
             ->andFilterWhere(['ilike', 'content', $searchModel->content]);
     }
 
+    public function getQuery(): ActiveQuery
+    {
+        return News::find();
+    }
+
     public function getNoResultsQuery(): ActiveQuery
     {
         return News::find()->where('0=1');

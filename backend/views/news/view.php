@@ -77,14 +77,14 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Ссылка',
                 'format' => 'raw',
                 'value' => function($model) {
-                    return Html::a($model->file->source, $model->file->source, ['target' => '_blank']);
+                    return Html::a($model->source, $model->source, ['target' => '_blank']);
                 },
             ],
             [
                 'label' => 'Тип файла',
                 'attribute' => 'type',
                 'value' => function($model) {
-                    return $model->file->type->name ?? 'Тип неизвестен';
+                    return $model->type->name ?? 'Тип неизвестен';
                 },
             ],
             [
@@ -92,14 +92,14 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'deleted',
                 'format' => 'boolean',
                 'value' => function($model) {
-                    return $model->file->deleted;
+                    return $model->deleted;
                 },
             ],
             [
                 'label' => 'Действия',
                 'format' => 'raw',
                 'value' => function($model) {
-                    if ($model->file->isDeleted()) {
+                    if ($model->isDeleted()) {
                         return Html::a('Восстановить', ['file/restore', 'id' => $model->id], [
                             'class' => 'btn btn-success',
                             'data' => [
@@ -170,8 +170,12 @@ function previewFiles(inputSelector, containerSelector, isImage = false) {
 
 function toggleSubmitButton() {
     const submitButton = $('#uploadModal .btn-primary');
-    const filesInput = $('#photosInput')[0];
-    submitButton.prop('disabled', !filesInput.files.length);
+    const photosInput = $('#photosInput')[0];
+    const previewImageInput = $('#previewImageInput')[0];
+    const documentsInput = $('#documentsInput')[0];
+    
+    const hasFiles = photosInput.files.length > 0 || previewImageInput.files.length > 0 || documentsInput.files.length > 0;
+    submitButton.prop('disabled', !hasFiles);
 }
 
 $(document).ready(function() {
@@ -179,9 +183,9 @@ $(document).ready(function() {
     previewFiles('#photosInput', '#photosPreviewContainer', true);
     previewFiles('#documentsInput', '#documentsContainer', false);
     
-    $('#photosInput').change(function() {
-        toggleSubmitButton();
-    });
+    $('#photosInput').change(toggleSubmitButton);
+    $('#previewImageInput').change(toggleSubmitButton);
+    $('#documentsInput').change(toggleSubmitButton);
 
     toggleSubmitButton();
 });

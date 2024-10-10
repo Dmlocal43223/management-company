@@ -78,10 +78,10 @@ class NewsService
         $transaction = Yii::$app->db->beginTransaction();
         try {
             $this->newsRepository->remove($news);
-            $newsFiles = $this->newsFileRepository->findFilesByNews($news, File::STATUS_ACTIVE);
+            $files = $this->fileRepository->findFilesByNews($news, File::STATUS_ACTIVE);
 
-            foreach ($newsFiles as $newsFile) {
-                $this->fileRepository->remove($newsFile->file);
+            foreach ($files as $file) {
+                $this->fileRepository->remove($file);
             }
             $transaction->commit();
         } catch (Exception $exception) {
@@ -95,10 +95,10 @@ class NewsService
         $transaction = Yii::$app->db->beginTransaction();
         try {
             $this->newsRepository->restore($news);
-            $newsFiles = $this->newsFileRepository->findFilesByNews($news, File::STATUS_DELETED);
+            $files = $this->fileRepository->findFilesByNews($news, File::STATUS_DELETED);
 
-            foreach ($newsFiles as $newsFile) {
-                $this->fileRepository->restore($newsFile->file);
+            foreach ($files as $file) {
+                $this->fileRepository->restore($file);
             }
             $transaction->commit();
         } catch (Exception $exception) {
@@ -107,14 +107,7 @@ class NewsService
         }
     }
 
-    public function uploadFile(News $news, NewsFileForm $form): bool
-    {
-        $this->saveFiles($news, $form);
-
-        return true;
-    }
-
-    private function saveFiles(News $news, NewsFileForm $form): void
+    public function saveFiles(News $news, NewsFileForm $form): void
     {
         if ($form->previewImage) {
             $this->handleFileUpload($news, $form->previewImage, FileType::PREVIEW_TYPE_ID);
@@ -147,4 +140,3 @@ class NewsService
         $this->newsFileRepository->save($newsFile);
     }
 }
-
