@@ -4,7 +4,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 /** @var yii\web\View $this */
-/** @var src\file\entities\FileType $model */
+/** @var backend\forms\FileTypeForm $fileTypeForm */
 /** @var yii\widgets\ActiveForm $form */
 ?>
 
@@ -12,11 +12,7 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
-
-    <?php if (Yii::$app->controller->action->id === 'update'): ?>
-        <?= $form->field($model, 'deleted')->checkbox() ?>
-    <?php endif ?>
+    <?= $form->field($fileTypeForm, 'name')->textInput(['maxlength' => true]) ?>
 
     <div class="form-group">
         <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success']) ?>

@@ -1,15 +1,17 @@
 <?php
 
-namespace backend\forms;
+declare(strict_types=1);
 
+namespace backend\forms\search;
+
+use src\file\entities\FileType;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use src\location\entities\Region;
 
 /**
- * RegionSearch represents the model behind the search form of `src\location\entities\Region`.
+ * FileTypeSearch represents the model behind the search form of `src\file\entities\FileType`.
  */
-class RegionSearch extends Model
+class FileTypeSearch extends Model
 {
     public $id;
     public $name;
@@ -24,8 +26,9 @@ class RegionSearch extends Model
     {
         return [
             [['id'], 'integer'],
-            [['name', 'created_at', 'updated_at'], 'safe'],
             [['deleted'], 'boolean'],
+            [['name'], 'string', 'max' => 255],
+            [['created_at', 'updated_at'], 'date', 'format' => 'php:Y-m-d']
         ];
     }
 
@@ -38,23 +41,27 @@ class RegionSearch extends Model
      */
     public function search(array $params): ActiveDataProvider
     {
-        $query = Region::find();
+        $query = FileType::find();
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => [
+                'defaultOrder' => ['id' => SORT_DESC]
+            ]
         ]);
 
         $this->load($params);
 
         if (!$this->validate()) {
+            $query->where('0=1');
             return $dataProvider;
         }
 
         $query->andFilterWhere([
             'id' => $this->id,
             'deleted' => $this->deleted,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'date(created_at)' => $this->created_at,
+            'date(updated_at)' => $this->updated_at
         ]);
 
         $query->andFilterWhere(['ilike', 'name', $this->name]);

@@ -1,14 +1,11 @@
 <?php
 
 use kartik\date\DatePicker;
-use src\file\entities\FileType;
-use yii\helpers\Html;
-use yii\helpers\Url;
-use yii\grid\ActionColumn;
 use yii\grid\GridView;
+use yii\helpers\Html;
 
 /** @var yii\web\View $this */
-/** @var backend\forms\FileTypeSearch $searchModel */
+/** @var backend\forms\search\FileTypeSearch $searchModel */
 /** @var yii\data\ActiveDataProvider $dataProvider */
 
 $this->title = 'Типы файлов';
@@ -26,7 +23,13 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            'id',
+            [
+                'attribute' => 'id',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return Html::a($model->id, ['view', 'id' => $model->id]);
+                },
+            ],
             'name',
             'deleted:boolean',
             [
@@ -52,12 +55,6 @@ $this->params['breadcrumbs'][] = $this->title;
                         'format' => 'yyyy-mm-dd',
                     ],
                 ]),
-            ],
-            [
-                'class' => ActionColumn::class,
-                'urlCreator' => function ($action, FileType $model, $key, $index, $column) {
-                    return Url::toRoute([$action, 'id' => $model->id]);
-                 }
             ],
         ],
     ]); ?>

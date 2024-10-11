@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace src\news\repositories;
 
-use backend\forms\search\NewsSearchForm;
+use backend\forms\search\NewsSearch;
 use RuntimeException;
 use src\news\entities\News;
 use yii\db\ActiveQuery;
@@ -41,7 +41,7 @@ class NewsRepository
         }
     }
 
-    public function getFilteredQuery(NewsSearchForm $searchModel): ActiveQuery
+    public function getFilteredQuery(NewsSearch $searchModel): ActiveQuery
     {
         return News::find()->andFilterWhere([
             'id' => $searchModel->id,

@@ -11,6 +11,7 @@ $this->title = 'Новость';
 $this->params['breadcrumbs'][] = ['label' => 'Новости', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $model->title;
 ?>
+
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
@@ -69,7 +70,6 @@ $this->params['breadcrumbs'][] = $model->title;
             <?php endforeach; ?>
         </ol>
     <?php endif; ?>
-
 </article>
 
 <style>
@@ -118,5 +118,3 @@ $this->params['breadcrumbs'][] = $model->title;
         margin: 0 auto;
     }
 </style>
-
-

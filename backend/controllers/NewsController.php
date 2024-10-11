@@ -4,7 +4,7 @@ namespace backend\controllers;
 
 use backend\forms\NewsFileForm;
 use backend\forms\NewsForm;
-use backend\forms\search\NewsSearchForm;
+use backend\forms\search\NewsSearch;
 use Exception;
 use src\file\repositories\FileRepository;
 use src\file\repositories\NewsFileRepository;
@@ -72,7 +72,7 @@ class NewsController extends Controller
      */
     public function actionIndex(): string
     {
-        $searchModel = new NewsSearchForm();
+        $searchModel = new NewsSearch();
         $searchModel->load($this->request->queryParams);
 
         if (!$searchModel->validate()) {

@@ -1,12 +1,12 @@
 <?php
 
-use backend\forms\search\NewsSearchForm;
+use backend\forms\search\NewsSearch;
 use kartik\grid\GridView;
 use yii\helpers\Html;
 use yii\helpers\StringHelper;
 
 /** @var yii\web\View $this */
-/** @var NewsSearchForm $searchModel */
+/** @var NewsSearch $searchModel */
 /** @var yii\data\ActiveDataProvider $dataProvider */
 
 $this->title = 'Новости';

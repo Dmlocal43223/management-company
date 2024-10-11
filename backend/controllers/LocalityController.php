@@ -2,13 +2,19 @@
 
 namespace backend\controllers;
 
+use backend\forms\LocalityForm;
+use backend\forms\search\LocalitySearch;
 use src\location\entities\Locality;
-use backend\forms\LocalitySearch;
+use src\location\repositories\LocalityRepository;
 use src\location\repositories\RegionRepository;
+use src\location\services\LocalityService;
+use Yii;
+use yii\data\ActiveDataProvider;
 use yii\db\Exception;
+use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
 use yii\web\Response;
 
 /**
@@ -16,6 +22,18 @@ use yii\web\Response;
  */
 class LocalityController extends Controller
 {
+    private LocalityRepository $localityRepository;
+    private RegionRepository $regionRepository;
+    private LocalityService $localityService;
+    public function __construct($id, $module, $config = [])
+    {
+        $this->localityRepository = new LocalityRepository();
+        $this->regionRepository = new RegionRepository();
+        $this->localityService = new LocalityService($this->localityRepository);
+
+        parent::__construct($id, $module, $config);
+    }
+
     /**
      * @inheritDoc
      */
@@ -42,7 +60,17 @@ class LocalityController extends Controller
     public function actionIndex(): string
     {
         $searchModel = new LocalitySearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
+        $searchModel->load($this->request->queryParams);
+
+        if (!$searchModel->validate()) {
+            $query = $this->localityRepository->getNoResultsQuery();
+        } else {
+            $query = $this->localityRepository->getFilteredQuery($searchModel);
+        }
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -71,19 +99,22 @@ class LocalityController extends Controller
      */
     public function actionCreate(): Response|string
     {
-        $model = new Locality();
+        $form = new LocalityForm();
+        $regions = $this->regionRepository->findRegionNamesById();
 
-        if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
+            try {
+                $news = $this->localityService->create($form);
+
+                return $this->redirect(['view', 'id' => $news->id]);
+            } catch (Exception $exception) {
+                Yii::$app->session->setFlash('error', $exception->getMessage());
             }
-        } else {
-            $model->loadDefaultValues();
         }
 
         return $this->render('create', [
-            'model' => $model,
-            'regions' => (new RegionRepository())->findRegionNamesIndexedById()
+            'localityForm' => $form,
+            'regions' => ArrayHelper::map($regions, 'id', 'name'),
         ]);
     }
 
@@ -97,14 +128,24 @@ class LocalityController extends Controller
     public function actionUpdate(int $id): Response|string
     {
         $model = $this->findModel($id);
+        $form = new LocalityForm();
+        $form->setAttributes($model->getAttributes());
+        $regions = $this->regionRepository->findRegionNamesById();
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
+            try {
+                $this->localityService->edit($model, $form);
+
+                return $this->redirect(['view', 'id' => $model->id]);
+            } catch (Exception $exception) {
+                Yii::$app->session->setFlash('error', $exception->getMessage());
+            }
         }
 
         return $this->render('update', [
             'model' => $model,
-            'regions' => (new RegionRepository())->findRegionNamesIndexedById()
+            'regionForm' => $form,
+            'regions' => ArrayHelper::map($regions, 'id', 'name'),
         ]);
     }
 
@@ -117,9 +158,28 @@ class LocalityController extends Controller
      */
     public function actionDelete(int $id): Response
     {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
+
+        try {
+            $this->localityService->remove($model);
+        } catch (Exception $exception) {
+            Yii::$app->session->setFlash('error', $exception->getMessage());
+        }
 
         return $this->redirect(['index']);
+    }
+
+    public function actionRestore(int $id): Response
+    {
+        $model = $this->findModel($id);
+
+        try {
+            $this->localityService->restore($model);
+        } catch (Exception $exception) {
+            Yii::$app->session->setFlash('error', $exception->getMessage());
+        }
+
+        return $this->redirect(['view', 'id' => $model->id]);
     }
 
     /**
@@ -131,10 +191,12 @@ class LocalityController extends Controller
      */
     protected function findModel(int $id): Locality
     {
-        if (($model = Locality::findOne(['id' => $id])) !== null) {
-            return $model;
+        $model = $this->localityRepository->findById($id);
+
+        if (!$model) {
+            throw new NotFoundHttpException('The requested page does not exist.');
         }
 
-        throw new NotFoundHttpException('The requested page does not exist.');
+        return $model;
     }
 }

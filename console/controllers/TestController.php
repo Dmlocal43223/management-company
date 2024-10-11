@@ -2,6 +2,9 @@
 
 namespace console\controllers;
 
+use src\file\entities\FileType;
+use src\file\repositories\FileRepository;
+use src\news\entities\News;
 use src\role\entities\Role;
 use Yii;
 use yii\console\Controller;
@@ -10,6 +13,10 @@ class TestController extends Controller
 {
     public function actionModel()
     {
+        $news = News::findOne(4);
+        $previewFile = (new FileRepository())->findFileByTypeForNews($news, FileType::PREVIEW_TYPE_ID);
+        dd($previewFile);
+
         dd(Yii::$app->authManager);
 
         dd(class_exists('src\role\entities\Role'));

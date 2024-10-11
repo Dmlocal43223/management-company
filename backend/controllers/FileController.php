@@ -4,8 +4,8 @@ namespace backend\controllers;
 
 use Exception;
 use src\file\entities\File;
-use src\file\entities\FileType;
 use src\file\repositories\FileRepository;
+use src\file\services\FileService;
 use Yii;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
@@ -15,9 +15,12 @@ use yii\web\Response;
 class FileController extends Controller
 {
     public FileRepository $fileRepository;
+    public FileService $fileService;
+
     public function __construct($id, $module, $config = [])
     {
         $this->fileRepository = new FileRepository();
+        $this->fileService = new FileService($this->fileRepository);
 
         parent::__construct($id, $module, $config);
     }
@@ -41,7 +44,7 @@ class FileController extends Controller
         $model = $this->findModel($id);
 
         try {
-            $this->fileRepository->remove($model);
+            $this->fileService->remove($model);
         } catch (Exception $exception) {
             Yii::$app->session->setFlash('error', $exception->getMessage());
         }
@@ -55,7 +58,7 @@ class FileController extends Controller
         $model = $this->findModel($id);
 
         try {
-            $this->fileRepository->restore($model);
+            $this->fileService->restore($model);
         } catch (Exception $exception) {
             Yii::$app->session->setFlash('error', $exception->getMessage());
         }

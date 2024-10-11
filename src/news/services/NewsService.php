@@ -81,7 +81,7 @@ class NewsService
             $files = $this->fileRepository->findFilesByNews($news, File::STATUS_ACTIVE);
 
             foreach ($files as $file) {
-                $this->fileRepository->remove($file);
+                $this->fileService->remove($file);
             }
             $transaction->commit();
         } catch (Exception $exception) {
@@ -98,7 +98,7 @@ class NewsService
             $files = $this->fileRepository->findFilesByNews($news, File::STATUS_DELETED);
 
             foreach ($files as $file) {
-                $this->fileRepository->restore($file);
+                $this->fileService->restore($file);
             }
             $transaction->commit();
         } catch (Exception $exception) {
@@ -110,6 +110,11 @@ class NewsService
     public function saveFiles(News $news, NewsFileForm $form): void
     {
         if ($form->previewImage) {
+            $previewFile = $this->fileRepository->findFileByTypeForNews($news, FileType::PREVIEW_TYPE_ID);
+            if ($previewFile) {
+                $this->fileService->remove($previewFile);
+            }
+
             $this->handleFileUpload($news, $form->previewImage, FileType::PREVIEW_TYPE_ID);
         }
 

@@ -4,38 +4,39 @@ declare(strict_types=1);
 
 namespace src\location\repositories;
 
-use backend\forms\search\RegionSearch;
-use src\location\entities\Region;
+use backend\forms\search\LocalitySearch;
+use src\location\entities\Locality;
 use yii\db\ActiveQuery;
 use yii\db\Exception;
 
-class RegionRepository
+class LocalityRepository
 {
-    public function findById(int $id): ?Region
+    public function findById(int $id): ?Locality
     {
-        return Region::findOne(['id' => $id]);
+        return Locality::findOne(['id' => $id]);
     }
 
-    public function save(Region $region): void
+    public function save(Locality $region): void
     {
         if (!$region->save()) {
             throw new Exception('Ошибка сохранения.');
         }
     }
 
-    public function findRegionNamesById(): array
+    public function findRegionNamesIndexedById(): array
     {
-        return Region::find()
+        return Locality::find()
             ->select(['name', 'id'])
             ->orderBy('name')
-            ->asArray()
-            ->all();
+            ->indexBy('id')
+            ->column();
     }
 
-    public function getFilteredQuery(RegionSearch $searchModel): ActiveQuery
+    public function getFilteredQuery(LocalitySearch $searchModel): ActiveQuery
     {
-        return Region::find()->andFilterWhere([
+        return Locality::find()->andFilterWhere([
             'id' => $searchModel->id,
+            'region_id' => $searchModel->region_id,
             'deleted' => $searchModel->deleted,
             'created_at' => $searchModel->created_at,
             'updated_at' => $searchModel->updated_at
@@ -45,6 +46,6 @@ class RegionRepository
 
     public function getNoResultsQuery(): ActiveQuery
     {
-        return Region::find()->where('0=1');
+        return Locality::find()->where('0=1');
     }
 }

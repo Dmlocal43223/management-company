@@ -1,13 +1,13 @@
 <?php
 
 use src\location\entities\Region;
-use yii\helpers\Html;
-use yii\helpers\Url;
 use yii\grid\ActionColumn;
 use yii\grid\GridView;
+use yii\helpers\Html;
+use yii\helpers\Url;
 
 /** @var yii\web\View $this */
-/** @var backend\forms\RegionSearch $searchModel */
+/** @var backend\forms\search\RegionSearch $searchModel */
 /** @var yii\data\ActiveDataProvider $dataProvider */
 
 $this->title = 'Регионы';
@@ -25,17 +25,17 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            'id',
+            [
+                'attribute' => 'id',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return Html::a($model->id, ['view', 'id' => $model->id]);
+                },
+            ],
             'name',
             'deleted:boolean',
             'created_at',
             'updated_at',
-            [
-                'class' => ActionColumn::class,
-                'urlCreator' => function ($action, Region $model, $key, $index, $column) {
-                    return Url::toRoute([$action, 'id' => $model->id]);
-                 }
-            ],
         ],
     ]); ?>
 

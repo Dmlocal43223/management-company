@@ -23,30 +23,21 @@ class FileRepository
         }
     }
 
-    public function remove(File $file): void
-    {
-        $file->remove();
-
-        if (!$file->save()) {
-            throw new RuntimeException('Ошибка удаления.');
-        }
-    }
-
-    public function restore(File $file): void
-    {
-        $file->restore();
-
-        if (!$file->save()) {
-            throw new RuntimeException('Ошибка удаления.');
-        }
-    }
-
     public function existsByHashAndNews(News $news, string $hash): bool
     {
         return File::find()
             ->innerJoin('news_file', "news_file.file_id = file.id and news_file.news_id = {$news->id}")
             ->andWhere(['file.hash' => $hash])
             ->exists();
+    }
+
+    public function findFileByTypeForNews(News $news, int $fileTypeId): ?File
+    {
+        return File::find()
+            ->innerJoin('news_file', "news_file.file_id = file.id and news_file.news_id = {$news->id}")
+            ->andWhere(['file.type_id' => $fileTypeId])
+            ->andWhere(['file.deleted' => File::STATUS_ACTIVE])
+            ->one();
     }
 
     public function findFilesByNews(News $news, $isDeleted = null): array

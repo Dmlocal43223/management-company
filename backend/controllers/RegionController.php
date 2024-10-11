@@ -2,12 +2,17 @@
 
 namespace backend\controllers;
 
+use backend\forms\RegionForm;
+use backend\forms\search\RegionSearch;
+use Exception;
 use src\location\entities\Region;
-use backend\forms\RegionSearch;
 use src\location\repositories\RegionRepository;
+use src\location\services\RegionService;
+use Yii;
+use yii\data\ActiveDataProvider;
+use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
 use yii\web\Response;
 
 /**
@@ -15,6 +20,16 @@ use yii\web\Response;
  */
 class RegionController extends Controller
 {
+    private RegionRepository $regionRepository;
+    private RegionService $regionService;
+    public function __construct($id, $module, $config = [])
+    {
+        $this->regionRepository = new RegionRepository();
+        $this->regionService = new RegionService($this->regionRepository);
+
+        parent::__construct($id, $module, $config);
+    }
+
     /**
      * @inheritDoc
      */
@@ -41,7 +56,17 @@ class RegionController extends Controller
     public function actionIndex(): string
     {
         $searchModel = new RegionSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
+        $searchModel->load($this->request->queryParams);
+
+        if (!$searchModel->validate()) {
+            $query = $this->regionRepository->getNoResultsQuery();
+        } else {
+            $query = $this->regionRepository->getFilteredQuery($searchModel);
+        }
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -69,18 +94,20 @@ class RegionController extends Controller
      */
     public function actionCreate(): Response|string
     {
-        $model = new Region();
+        $form = new RegionForm();
 
-        if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
+            try {
+                $news = $this->regionService->create($form);
+
+                return $this->redirect(['view', 'id' => $news->id]);
+            } catch (Exception $exception) {
+                Yii::$app->session->setFlash('error', $exception->getMessage());
             }
-        } else {
-            $model->loadDefaultValues();
         }
 
         return $this->render('create', [
-            'model' => $model,
+            'regionForm' => $form,
         ]);
     }
 
@@ -94,13 +121,22 @@ class RegionController extends Controller
     public function actionUpdate(int $id): Response|string
     {
         $model = $this->findModel($id);
+        $form = new RegionForm();
+        $form->setAttributes($model->getAttributes());
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
+            try {
+                $this->regionService->edit($model, $form);
+
+                return $this->redirect(['view', 'id' => $model->id]);
+            } catch (Exception $exception) {
+                Yii::$app->session->setFlash('error', $exception->getMessage());
+            }
         }
 
         return $this->render('update', [
             'model' => $model,
+            'regionForm' => $form,
         ]);
     }
 
@@ -113,9 +149,28 @@ class RegionController extends Controller
      */
     public function actionDelete(int $id): Response
     {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
+
+        try {
+            $this->regionService->remove($model);
+        } catch (Exception $exception) {
+            Yii::$app->session->setFlash('error', $exception->getMessage());
+        }
 
         return $this->redirect(['index']);
+    }
+
+    public function actionRestore(int $id): Response
+    {
+        $model = $this->findModel($id);
+
+        try {
+            $this->regionService->restore($model);
+        } catch (Exception $exception) {
+            Yii::$app->session->setFlash('error', $exception->getMessage());
+        }
+
+        return $this->redirect(['view', 'id' => $model->id]);
     }
 
     /**
@@ -127,12 +182,12 @@ class RegionController extends Controller
      */
     protected function findModel(int $id): Region
     {
-        $region = (new RegionRepository())->findById($id);
+        $model = $this->regionRepository->findById($id);
 
-        if (!$region) {
+        if (!$model) {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
 
-        return $region;
+        return $model;
     }
 }

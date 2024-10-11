@@ -23,6 +23,9 @@ use yii\db\Expression;
  */
 class Region extends ActiveRecord
 {
+    public const STATUS_ACTIVE = 0;
+    public const STATUS_DELETED = 1;
+
     /**
      * {@inheritdoc}
      */
@@ -73,6 +76,36 @@ class Region extends ActiveRecord
             'created_at' => 'Дата создания',
             'updated_at' => 'Дата обновления',
         ];
+    }
+
+    public static function create(string $name): static
+    {
+        $file = new static();
+        $file->name = $name;
+        $file->deleted = self::STATUS_ACTIVE;
+        $file->created_at = new Expression('CURRENT_TIMESTAMP');
+
+        return $file;
+    }
+
+    public function edit(string $name): void
+    {
+        $this->name = $name;
+    }
+
+    public function remove(): void
+    {
+        $this->deleted = self::STATUS_DELETED;
+    }
+
+    public function restore(): void
+    {
+        $this->deleted = self::STATUS_ACTIVE;
+    }
+
+    public function isDeleted(): bool
+    {
+        return $this->deleted;
     }
 
     /**

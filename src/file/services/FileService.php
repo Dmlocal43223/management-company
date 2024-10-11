@@ -86,4 +86,30 @@ class FileService
 
         return 'uploads/' . $directory;
     }
+
+    public function remove(File $file): void
+    {
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            $file->remove();
+            $this->fileRepository->save($file);
+            $transaction->commit();
+        } catch (Exception $exception) {
+            $transaction->rollBack();
+            throw $exception;
+        }
+    }
+
+    public function restore(File $file): void
+    {
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            $file->restore();
+            $this->fileRepository->save($file);
+            $transaction->commit();
+        } catch (Exception $exception) {
+            $transaction->rollBack();
+            throw $exception;
+        }
+    }
 }

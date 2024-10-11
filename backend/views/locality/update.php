@@ -4,6 +4,7 @@ use yii\helpers\Html;
 
 /** @var yii\web\View $this */
 /** @var src\location\entities\Locality $model */
+/** @var backend\forms\LocalityForm $localityForm */
 /** @var array $regions */
 
 $this->title = 'Обновить населенный пункт: ' . $model->name;
@@ -16,7 +17,7 @@ $this->params['breadcrumbs'][] = 'Обновить';
     <h1><?= Html::encode($this->title) ?></h1>
 
     <?= $this->render('_form', [
-        'model' => $model,
+        'localityForm' => $localityForm,
         'regions' => $regions
     ]) ?>
 

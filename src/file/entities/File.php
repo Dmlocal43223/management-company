@@ -30,6 +30,7 @@ use yii\db\Expression;
  * @property FileType $type
  * @property UserInformation[] $userInformations
  */
+
 class File extends ActiveRecord
 {
     public const STATUS_ACTIVE = 0;

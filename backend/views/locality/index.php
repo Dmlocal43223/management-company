@@ -1,13 +1,15 @@
 <?php
 
 use src\location\entities\Locality;
-use yii\helpers\Html;
-use yii\helpers\Url;
+use src\location\entities\Region;
 use yii\grid\ActionColumn;
 use yii\grid\GridView;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
+use yii\helpers\Url;
 
 /** @var yii\web\View $this */
-/** @var backend\forms\LocalitySearch $searchModel */
+/** @var backend\forms\search\LocalitySearch $searchModel */
 /** @var yii\data\ActiveDataProvider $dataProvider */
 
 $this->title = 'Населенные пункты';
@@ -25,20 +27,27 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-
-            'id',
+            [
+                'attribute' => 'id',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return Html::a($model->id, ['view', 'id' => $model->id]);
+                },
+            ],
             'name',
-            'region_id',
+            [
+                'label' => 'Регион',
+                'value' => function ($model) {
+                    return $model->region->name;
+                },
+                'filter' => Html::activeDropDownList($searchModel, 'region_id',
+                    ArrayHelper::map(Region::find()->all(), 'id', 'name'),
+                    ['prompt' => 'Выберите регион', 'class' => 'form-control']
+                ),
+            ],
             'deleted:boolean',
             'created_at',
             'updated_at',
-            [
-                'class' => ActionColumn::class,
-                'urlCreator' => function ($action, Locality $model, $key, $index, $column) {
-                    return Url::toRoute([$action, 'id' => $model->id]);
-                 }
-            ],
         ],
     ]); ?>
 

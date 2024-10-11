@@ -3,11 +3,11 @@
 use yii\helpers\Html;
 
 /** @var yii\web\View $this */
-/** @var src\location\entities\Locality $model */
+/** @var backend\forms\LocalityForm $localityForm */
 /** @var array $regions */
 
 $this->title = 'Создать населенный пункт';
-$this->params['breadcrumbs'][] = ['label' => 'Localities', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Населенные пункты', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="locality-create">
@@ -15,7 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <?= $this->render('_form', [
-        'model' => $model,
+        'localityForm' => $localityForm,
         'regions' => $regions
     ]) ?>
 

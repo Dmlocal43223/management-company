@@ -5,9 +5,9 @@ namespace backend\forms\search;
 use yii\base\Model;
 
 /**
- * NewsSearchForm represents the model behind the search form of `src\news\entities\News`.
+ * NewsSearch represents the model behind the search form of `src\news\entities\News`.
  */
-class NewsSearchForm extends Model
+class NewsSearch extends Model
 {
     public $id;
     public $title;

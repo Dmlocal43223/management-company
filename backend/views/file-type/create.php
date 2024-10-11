@@ -3,7 +3,7 @@
 use yii\helpers\Html;
 
 /** @var yii\web\View $this */
-/** @var src\file\entities\FileType $model */
+/** @var backend\forms\FileTypeForm $fileTypeForm */
 
 $this->title = 'Создать тип файла';
 $this->params['breadcrumbs'][] = ['label' => 'Типы файлов', 'url' => ['index']];
@@ -14,7 +14,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <?= $this->render('_form', [
-        'model' => $model,
+        'fileTypeForm' => $fileTypeForm,
     ]) ?>
 
 </div>
