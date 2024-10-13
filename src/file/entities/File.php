@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace src\file\entities;
 
+use src\news\entities\NewsFile;
 use src\user\entities\User;
 use src\user\entities\UserInformation;
+use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -96,14 +98,14 @@ class File extends ActiveRecord
         ];
     }
 
-    public static function create(string $source, string $hash, int $size, int $typeId, int $userId): static
+    public static function create(string $source, string $hash, int $size, int $typeId): static
     {
         $file = new static();
         $file->source = $source;
         $file->hash = $hash;
         $file->size = $size;
         $file->type_id = $typeId;
-        $file->created_user_id = $userId;
+        $file->created_user_id = Yii::$app->user->id;
         $file->deleted = self::STATUS_ACTIVE;
         $file->created_at = new Expression('CURRENT_TIMESTAMP');
 

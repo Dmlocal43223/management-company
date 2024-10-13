@@ -34,8 +34,7 @@ class FileService
         $directoryPath = $this->getDirectoryPath($fileTypeId);
         $size = filesize($file->tempName);
         $source = $this->uploadFile($file, $directoryPath);
-        $user = Yii::$app->user->id;
-        $file = File::create($source, $hash, $size, $fileTypeId, $user);
+        $file = File::create($source, $hash, $size, $fileTypeId);
 
         $transaction = Yii::$app->db->beginTransaction();
         try {
@@ -111,5 +110,10 @@ class FileService
             $transaction->rollBack();
             throw $exception;
         }
+    }
+
+    public function generateHash(UploadedFile $file): string
+    {
+        return hash_file('sha256', $file->tempName) ?: throw new RuntimeException('Ошибка генерации хэша');
     }
 }

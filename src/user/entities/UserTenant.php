@@ -26,6 +26,9 @@ use yii\db\Expression;
  */
 class UserTenant extends ActiveRecord
 {
+    public const STATUS_ACTIVE = 0;
+    public const STATUS_NOT_ACTIVE = 1;
+
     /**
      * {@inheritdoc}
      */
@@ -74,11 +77,11 @@ class UserTenant extends ActiveRecord
     {
         return [
             'id' => 'ID',
-            'user_id' => 'User ID',
-            'apartment_id' => 'apartment_id',
-            'is_active' => 'Is Active',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
+            'user_id' => 'Пользователь',
+            'apartment_id' => 'Квартира',
+            'is_active' => 'Активный',
+            'created_at' => 'Дата создания',
+            'updated_at' => 'Дата обновления',
         ];
     }
 

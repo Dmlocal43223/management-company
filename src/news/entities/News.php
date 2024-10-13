@@ -6,7 +6,6 @@ namespace src\news\entities;
 
 use src\file\entities\File;
 use src\file\entities\FileType;
-use src\file\entities\NewsFile;
 use src\user\entities\User;
 use Yii;
 use yii\behaviors\TimestampBehavior;

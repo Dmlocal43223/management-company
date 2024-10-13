@@ -47,10 +47,6 @@ AppAsset::register($this);
                 [
                     'label' => 'Роли',
                     'url' => ['/role/index'],
-                ],
-                [
-                    'label' => 'Расписание',
-                    'url' => ['/user-schedule/index'],
                 ]
             ]
         ],

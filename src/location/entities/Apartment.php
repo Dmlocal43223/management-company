@@ -36,7 +36,7 @@ class Apartment extends ActiveRecordAlias
      */
     public static function tableName(): string
     {
-        return 'apartment';
+        return '{{%apartment}}';
     }
 
     /**

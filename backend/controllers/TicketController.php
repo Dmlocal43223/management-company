@@ -4,25 +4,39 @@ namespace backend\controllers;
 
 use src\ticket\entities\Ticket;
 use backend\forms\search\TicketSearch;
+use src\ticket\repositories\TicketRepository;
+use src\ticket\services\TicketService;
+use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\Response;
 
 /**
  * TicketController implements the CRUD actions for Ticket model.
  */
 class TicketController extends Controller
 {
+    private TicketRepository $ticketRepository;
+    private TicketService $ticketService;
+    public function __construct($id, $module, $config = [])
+    {
+        $this->ticketRepository = new TicketRepository();
+        $this->ticketService = new TicketService($this->ticketRepository);
+
+        parent::__construct($id, $module, $config);
+    }
+
     /**
      * @inheritDoc
      */
-    public function behaviors()
+    public function behaviors(): array
     {
         return array_merge(
             parent::behaviors(),
             [
                 'verbs' => [
-                    'class' => VerbFilter::className(),
+                    'class' => VerbFilter::class,
                     'actions' => [
                         'delete' => ['POST'],
                     ],
@@ -36,10 +50,20 @@ class TicketController extends Controller
      *
      * @return string
      */
-    public function actionIndex()
+    public function actionIndex(): string
     {
         $searchModel = new TicketSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
+        $searchModel->load($this->request->queryParams);
+
+        if (!$searchModel->validate()) {
+            $query = $this->ticketRepository->getNoResultsQuery();
+        } else {
+            $query = $this->ticketRepository->getFilteredQuery($searchModel);
+        }
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -53,7 +77,7 @@ class TicketController extends Controller
      * @return string
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($id)
+    public function actionView(int $id): string
     {
         return $this->render('view', [
             'model' => $this->findModel($id),
@@ -63,9 +87,9 @@ class TicketController extends Controller
     /**
      * Creates a new Ticket model.
      * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return string|\yii\web\Response
+     * @return string|Response
      */
-    public function actionCreate()
+    public function actionCreate(): Response|string
     {
         $model = new Ticket();
 
@@ -89,7 +113,7 @@ class TicketController extends Controller
      * @return string|\yii\web\Response
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate($id)
+    public function actionUpdate(int $id): Response|string
     {
         $model = $this->findModel($id);
 
@@ -106,10 +130,10 @@ class TicketController extends Controller
      * Deletes an existing Ticket model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param int $id ID
-     * @return \yii\web\Response
+     * @return Response
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)
+    public function actionDelete(int $id): Response
     {
         $this->findModel($id)->delete();
 
@@ -123,7 +147,7 @@ class TicketController extends Controller
      * @return Ticket the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id)
+    protected function findModel(int $id): Ticket
     {
         if (($model = Ticket::findOne(['id' => $id])) !== null) {
             return $model;

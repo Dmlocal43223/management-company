@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace src\file\entities;
+namespace src\news\entities;
 
-use src\news\entities\News;
+use src\file\entities\File;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;

@@ -17,9 +17,11 @@ class m240928_185830_create_ticket_table extends Migration
             'number' => $this->string()->notNull()->unique(),
             'status_id' => $this->integer()->notNull(),
             'description' => $this->text()->notNull(),
+            'worker_id' => $this->integer()->null(),
             'house_id' => $this->integer()->notNull(),
             'apartment_id' => $this->integer()->null(),
             'type_id' => $this->integer()->notNull(),
+            'created_user_id' => $this->integer()->notNull(),
             'deleted' => $this->boolean()->notNull()->defaultValue(false),
             'closed_at' => $this->dateTime()->null(),
             'created_at' => $this->dateTime()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
@@ -37,6 +39,22 @@ class m240928_185830_create_ticket_table extends Migration
             '{{%ticket}}',
             'status_id',
             '{{%ticket_status}}',
+            'id',
+            'RESTRICT',
+            'CASCADE'
+        );
+
+        $this->createIndex(
+            '{{%idx-ticket-worker_id}}',
+            '{{%ticket}}',
+            'worker_id'
+        );
+
+        $this->addForeignKey(
+            '{{%fk-ticket-worker_id}}',
+            '{{%ticket}}',
+            'worker_id',
+            '{{%user}}',
             'id',
             'RESTRICT',
             'CASCADE'
@@ -91,6 +109,22 @@ class m240928_185830_create_ticket_table extends Migration
         );
 
         $this->createIndex(
+            '{{%idx-ticket-created_user_id}}',
+            '{{%ticket}}',
+            'created_user_id'
+        );
+
+        $this->addForeignKey(
+            '{{%fk-ticket-created_user_id}}',
+            '{{%ticket}}',
+            'created_user_id',
+            '{{%user}}',
+            'id',
+            'RESTRICT',
+            'CASCADE'
+        );
+
+        $this->createIndex(
             '{{%idx-ticket-deleted}}',
             '{{%ticket}}',
             'deleted'
@@ -104,6 +138,16 @@ class m240928_185830_create_ticket_table extends Migration
     {
         $this->dropIndex(
             '{{%idx-ticket-deleted}}',
+            '{{%ticket}}'
+        );
+
+        $this->dropForeignKey(
+            '{{%fk-ticket-created_user_id}}',
+            '{{%ticket}}'
+        );
+
+        $this->dropIndex(
+            '{{%idx-ticket-created_user_id}}',
             '{{%ticket}}'
         );
 
@@ -134,6 +178,16 @@ class m240928_185830_create_ticket_table extends Migration
 
         $this->dropIndex(
             '{{%idx-ticket-house_id}}',
+            '{{%ticket}}'
+        );
+
+        $this->dropForeignKey(
+            '{{%fk-ticket-worker_id}}',
+            '{{%ticket}}'
+        );
+
+        $this->dropIndex(
+            '{{%idx-ticket-worker_id}}',
             '{{%ticket}}'
         );
 

@@ -76,12 +76,42 @@ class UserInformation extends ActiveRecord
     {
         return [
             'id' => 'ID',
-            'user_id' => 'User ID',
-            'telegram_id' => 'Telegram ID',
-            'avatar_file_id' => 'Avatar File ID',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
+            'name' => 'Имя',
+            'surname' => 'Фамилия',
+            'user_id' => 'Пользователь',
+            'telegram_id' => 'Телеграм',
+            'avatar_file_id' => 'Аватар',
+            'created_at' => 'Дата создания',
+            'updated_at' => 'Дата обновления',
         ];
+    }
+
+    public static function create(
+        User $user,
+        string $name,
+        string $surname,
+    ): static
+    {
+        $userInformation = new static();
+        $userInformation->user_id = $user->id;
+        $userInformation->name = $name;
+        $userInformation->surname = $surname;
+        $userInformation->created_at = new Expression('CURRENT_TIMESTAMP');
+
+        return $userInformation;
+    }
+
+    public function edit(
+        string $name,
+        string $surname,
+        string $telegramId,
+        File $avatar
+    ): void
+    {
+        $this->name = $name;
+        $this->surname = $surname;
+        $this->telegram_id = $telegramId;
+        $this->avatar_file_id = $avatar->id;
     }
 
     /**

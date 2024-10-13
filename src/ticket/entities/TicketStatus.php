@@ -24,6 +24,13 @@ use yii\db\Expression;
  */
 class TicketStatus extends ActiveRecord
 {
+    public const STATUS_ACTIVE = 0;
+    public const STATUS_DELETED = 1;
+
+    public const STATUS_NEW_ID = 1;
+    public const STATUS_PROCESSED_ID = 2;
+    public const STATUS_CLOSED_ID = 3;
+
     /**
      * {@inheritdoc}
      */
@@ -69,11 +76,41 @@ class TicketStatus extends ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
-            'deleted' => 'Deleted',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
+            'name' => 'Название',
+            'deleted' => 'Удалено',
+            'created_at' => 'Дата создания',
+            'updated_at' => 'Дата обновления',
         ];
+    }
+
+    public static function create(string $name): static
+    {
+        $ticketStatus = new static();
+        $ticketStatus->name = $name;
+        $ticketStatus->deleted = self::STATUS_ACTIVE;
+        $ticketStatus->created_at = new Expression('CURRENT_TIMESTAMP');
+
+        return $ticketStatus;
+    }
+
+    public function edit(string $name): void
+    {
+        $this->name = $name;
+    }
+
+    public function remove(): void
+    {
+        $this->deleted = self::STATUS_DELETED;
+    }
+
+    public function restore(): void
+    {
+        $this->deleted = self::STATUS_ACTIVE;
+    }
+
+    public function isDeleted(): bool
+    {
+        return $this->deleted;
     }
 
     /**

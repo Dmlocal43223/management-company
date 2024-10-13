@@ -8,6 +8,7 @@ use RuntimeException;
 use src\file\entities\File;
 use src\file\entities\FileType;
 use src\news\entities\News;
+use src\ticket\entities\Ticket;
 
 class FileRepository
 {
@@ -27,6 +28,14 @@ class FileRepository
     {
         return File::find()
             ->innerJoin('news_file', "news_file.file_id = file.id and news_file.news_id = {$news->id}")
+            ->andWhere(['file.hash' => $hash])
+            ->exists();
+    }
+
+    public function existsByHashAndTicket(Ticket $ticket, string $hash): bool
+    {
+        return File::find()
+            ->innerJoin('ticket_file', "ticket_file.file_id = file.id and ticket_file.ticket_id = {$ticket->id}")
             ->andWhere(['file.hash' => $hash])
             ->exists();
     }

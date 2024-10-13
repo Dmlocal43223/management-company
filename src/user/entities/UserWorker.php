@@ -74,11 +74,11 @@ class UserWorker extends ActiveRecord
     {
         return [
             'id' => 'ID',
-            'user_id' => 'User ID',
-            'house_id' => 'House ID',
-            'is_active' => 'Is Active',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
+            'user_id' => 'Пользователь',
+            'house_id' => 'Дом',
+            'is_active' => 'Активный',
+            'created_at' => 'Дата создания',
+            'updated_at' => 'Дата обновления',
         ];
     }
 

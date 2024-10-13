@@ -3,6 +3,7 @@
 namespace backend\controllers;
 
 use common\forms\LoginForm;
+use src\user\repositories\UserRepository;
 use Yii;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
@@ -13,10 +14,18 @@ use yii\web\Response;
  */
 class SiteController extends Controller
 {
+    private UserRepository $userRepository;
+    public function __construct($id, $module, $config = [])
+    {
+        $this->userRepository = new UserRepository();
+
+        parent::__construct($id, $module, $config);
+    }
+
     /**
      * {@inheritdoc}
      */
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
             'verbs' => [
@@ -31,7 +40,7 @@ class SiteController extends Controller
     /**
      * {@inheritdoc}
      */
-    public function actions()
+    public function actions(): array
     {
         return [
             'error' => [
@@ -45,7 +54,7 @@ class SiteController extends Controller
      *
      * @return string
      */
-    public function actionIndex()
+    public function actionIndex(): string
     {
         return $this->render('index');
     }
@@ -55,7 +64,7 @@ class SiteController extends Controller
      *
      * @return string|Response
      */
-    public function actionLogin()
+    public function actionLogin(): Response|string
     {
         if (!Yii::$app->user->isGuest) {
             return $this->goHome();
@@ -63,15 +72,16 @@ class SiteController extends Controller
 
         $this->layout = 'blank';
 
-        $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
+        $form = new LoginForm();
+        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
+            Yii::$app->user->login($this->userRepository->findByUsername($form->username), $form->rememberMe ? 3600 * 24 * 30 : 0);
             return $this->goBack();
         }
 
-        $model->password = '';
+        $form->password = '';
 
         return $this->render('login', [
-            'model' => $model,
+            'loginForm' => $form,
         ]);
     }
 
@@ -80,7 +90,7 @@ class SiteController extends Controller
      *
      * @return Response
      */
-    public function actionLogout()
+    public function actionLogout(): Response
     {
         Yii::$app->user->logout();
 

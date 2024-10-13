@@ -7,6 +7,8 @@ namespace src\location\repositories;
 use backend\forms\search\ApartmentSearch;
 use src\location\entities\Apartment;
 use src\location\entities\House;
+use src\user\entities\UserTenant;
+use Yii;
 use yii\db\ActiveQuery;
 use yii\db\Exception;
 
@@ -51,6 +53,19 @@ class ApartmentRepository
             ->innerJoinWith('house')
             ->andWhere(['apartment.house_id' => $house->id])
             ->andFilterWhere(['apartment.deleted' => $isDeleted])
+            ->all();
+    }
+
+    public function findActiveApartmentNumbersByUser(): array
+    {
+        return Apartment::find()
+            ->innerJoinWith('userTenants')
+            ->select(['apartment.number', 'id'])
+            ->andWhere(['apartment.deleted' => Apartment::STATUS_ACTIVE])
+            ->andWhere(['user_tenant.user_id' => Yii::$app->user->id])
+            ->andWhere(['user_tenant.is_active' => UserTenant::STATUS_NOT_ACTIVE])
+            ->orderBy('apartment.number')
+            ->asArray()
             ->all();
     }
 }

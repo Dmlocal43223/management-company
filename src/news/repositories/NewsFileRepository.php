@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace src\file\repositories;
+namespace src\news\repositories;
 
-use src\file\entities\NewsFile;
+use src\news\entities\NewsFile;
 use yii\db\Exception;
 
 class NewsFileRepository

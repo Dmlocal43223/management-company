@@ -10,11 +10,11 @@ use Exception;
 use RuntimeException;
 use src\file\entities\File;
 use src\file\entities\FileType;
-use src\file\entities\NewsFile;
 use src\file\repositories\FileRepository;
-use src\file\repositories\NewsFileRepository;
 use src\file\services\FileService;
 use src\news\entities\News;
+use src\news\entities\NewsFile;
+use src\news\repositories\NewsFileRepository;
 use src\news\repositories\NewsRepository;
 use Yii;
 use yii\web\UploadedFile;
@@ -129,19 +129,5 @@ class NewsService
                 $this->handleFileUpload($news, $document, FileType::DOCUMENT_TYPE_ID);
             }
         }
-    }
-
-    private function handleFileUpload(News $news, UploadedFile $file, int $fileTypeId): void
-    {
-        $hash = hash_file('sha256', $file->tempName);
-
-        if ($this->fileRepository->existsByHashAndNews($news, $hash)) {
-            throw new RuntimeException("Файл {$file->baseName} уже загружен.");
-        }
-
-        $file = $this->fileService->create($file, $hash, $fileTypeId);
-        $newsFile = NewsFile::create($news, $file);
-
-        $this->newsFileRepository->save($newsFile);
     }
 }
