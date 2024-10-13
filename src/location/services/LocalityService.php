@@ -21,7 +21,7 @@ class LocalityService
 
     public function create(LocalityForm $form): Locality
     {
-        $locality = Locality::create($form->name, (int)$form->regionId);
+        $locality = Locality::create($form->name, (int)$form->region_id);
 
         $transaction = Yii::$app->db->beginTransaction();
         try {
@@ -37,7 +37,7 @@ class LocalityService
 
     public function edit(Locality $locality, LocalityForm $form): void
     {
-        $locality->edit($form->name, (int)$form->regionId);
+        $locality->edit($form->name, (int)$form->region_id);
 
         $transaction = Yii::$app->db->beginTransaction();
         try {

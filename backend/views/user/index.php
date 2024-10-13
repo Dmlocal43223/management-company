@@ -1,13 +1,13 @@
 <?php
 
 use src\user\entities\User;
-use yii\helpers\Html;
-use yii\helpers\Url;
 use yii\grid\ActionColumn;
 use yii\grid\GridView;
+use yii\helpers\Html;
+use yii\helpers\Url;
 
 /** @var yii\web\View $this */
-/** @var backend\forms\UserSearch $searchModel */
+/** @var \backend\forms\search\UserSearch $searchModel */
 /** @var yii\data\ActiveDataProvider $dataProvider */
 
 $this->title = 'Пользователи';

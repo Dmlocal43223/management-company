@@ -40,7 +40,7 @@ class FileRepository
             ->one();
     }
 
-    public function findFilesByNews(News $news, $isDeleted = null): array
+    public function findFilesByNews(News $news, int $isDeleted = null): array
     {
         return File::find()
             ->innerJoinWith('newsFiles')

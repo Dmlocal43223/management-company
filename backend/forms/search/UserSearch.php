@@ -1,10 +1,10 @@
 <?php
 
-namespace backend\forms;
+namespace backend\forms\search;
 
+use src\user\entities\User;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use src\user\entities\User;
 
 /**
  * UserSearch represents the model behind the search form of `src\user\entities\User`.

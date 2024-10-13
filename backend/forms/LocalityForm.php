@@ -10,16 +10,16 @@ use yii\base\Model;
 class LocalityForm extends Model
 {
     public $name;
-    public $regionId;
+    public $region_id;
 
     public function rules(): array
     {
         return [
-            [['name', 'regionId'], 'required'],
+            [['name', 'region_id'], 'required'],
             [['name'], 'string', 'max' => 255],
-            [['regionId'], 'integer'],
-            [['name'], 'unique', 'targetClass' => Locality::class]
-
+            [['region_id'], 'integer'],
+            [['region_id', 'name'], 'unique', 'targetClass' => Locality::class, 'targetAttribute' => ['region_id', 'name'],
+                'message' => 'Комбинация идентификатора местоположения и имени должна быть уникальной.'],
         ];
     }
 
@@ -27,7 +27,7 @@ class LocalityForm extends Model
     {
         return [
             'name' => 'Название',
-            'regionId' => 'Регион',
+            'region_id' => 'Регион',
         ];
     }
 }

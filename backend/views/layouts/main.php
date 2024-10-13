@@ -36,7 +36,6 @@ AppAsset::register($this);
         ],
     ]);
     $menuItems = [
-        ['label' => 'Home', 'url' => ['/site/index']],
         [
             'label' => 'Пользователи',
             'dropDownOptions' => ['class' => 'dropdown-menu'],
@@ -91,7 +90,7 @@ AppAsset::register($this);
                     'url' => ['/street/index'],
                 ],
                 [
-                    'label' => 'Дома',
+                    'label' => 'Объекты',
                     'url' => ['/house/index'],
                 ],
                 [
@@ -101,7 +100,7 @@ AppAsset::register($this);
             ],
         ],
         [
-            'label' => 'Общие',
+            'label' => 'Настройки',
             'dropDownOptions' => ['class' => 'dropdown-menu'],
             'items' => [
                 [

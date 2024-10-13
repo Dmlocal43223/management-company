@@ -61,6 +61,7 @@ class LocalityController extends Controller
     {
         $searchModel = new LocalitySearch();
         $searchModel->load($this->request->queryParams);
+        $regions = $this->regionRepository->findAll();
 
         if (!$searchModel->validate()) {
             $query = $this->localityRepository->getNoResultsQuery();
@@ -75,6 +76,7 @@ class LocalityController extends Controller
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'regions' => ArrayHelper::map($regions, 'id', 'name'),
         ]);
     }
 
@@ -100,7 +102,7 @@ class LocalityController extends Controller
     public function actionCreate(): Response|string
     {
         $form = new LocalityForm();
-        $regions = $this->regionRepository->findRegionNamesById();
+        $regions = $this->regionRepository->findActiveNamesWithId();
 
         if ($form->load(Yii::$app->request->post()) && $form->validate()) {
             try {
@@ -130,7 +132,7 @@ class LocalityController extends Controller
         $model = $this->findModel($id);
         $form = new LocalityForm();
         $form->setAttributes($model->getAttributes());
-        $regions = $this->regionRepository->findRegionNamesById();
+        $regions = $this->regionRepository->findActiveNamesWithId();
 
         if ($form->load(Yii::$app->request->post()) && $form->validate()) {
             try {
@@ -144,7 +146,7 @@ class LocalityController extends Controller
 
         return $this->render('update', [
             'model' => $model,
-            'regionForm' => $form,
+            'localityForm' => $form,
             'regions' => ArrayHelper::map($regions, 'id', 'name'),
         ]);
     }
@@ -180,6 +182,17 @@ class LocalityController extends Controller
         }
 
         return $this->redirect(['view', 'id' => $model->id]);
+    }
+
+    public function actionFindLocalities(int $region_id): array
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        return ArrayHelper::map(
+            $this->localityRepository->findByRegionId($region_id),
+            'id',
+            'name'
+        );
     }
 
     /**

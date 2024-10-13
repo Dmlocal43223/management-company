@@ -28,6 +28,9 @@ use yii\db\Expression;
  */
 class Apartment extends ActiveRecordAlias
 {
+    public const STATUS_ACTIVE = 0;
+    public const STATUS_DELETED = 1;
+
     /**
      * {@inheritdoc}
      */
@@ -76,12 +79,44 @@ class Apartment extends ActiveRecordAlias
     {
         return [
             'id' => 'ID',
-            'number' => 'Number',
-            'house_id' => 'House ID',
-            'deleted' => 'Deleted',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
+            'number' => 'Номер',
+            'house_id' => 'Объект',
+            'deleted' => 'Удалено',
+            'created_at' => 'Дата создания',
+            'updated_at' => 'Дата обновления',
         ];
+    }
+
+    public static function create(string $number, int $house_id): static
+    {
+        $file = new static();
+        $file->number = $number;
+        $file->house_id = $house_id;
+        $file->deleted = self::STATUS_ACTIVE;
+        $file->created_at = new Expression('CURRENT_TIMESTAMP');
+
+        return $file;
+    }
+
+    public function edit(string $number, int $house_id): void
+    {
+        $this->number = $number;
+        $this->house_id = $house_id;
+    }
+
+    public function remove(): void
+    {
+        $this->deleted = self::STATUS_DELETED;
+    }
+
+    public function restore(): void
+    {
+        $this->deleted = self::STATUS_ACTIVE;
+    }
+
+    public function isDeleted(): bool
+    {
+        return $this->deleted;
     }
 
     /**

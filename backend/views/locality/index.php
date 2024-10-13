@@ -11,6 +11,7 @@ use yii\helpers\Url;
 /** @var yii\web\View $this */
 /** @var backend\forms\search\LocalitySearch $searchModel */
 /** @var yii\data\ActiveDataProvider $dataProvider */
+/** @var array $regions */
 
 $this->title = 'Населенные пункты';
 $this->params['breadcrumbs'][] = $this->title;
@@ -41,7 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     return $model->region->name;
                 },
                 'filter' => Html::activeDropDownList($searchModel, 'region_id',
-                    ArrayHelper::map(Region::find()->all(), 'id', 'name'),
+                    $regions,
                     ['prompt' => 'Выберите регион', 'class' => 'form-control']
                 ),
             ],

@@ -25,6 +25,9 @@ use yii\db\Expression;
  */
 class Street extends ActiveRecord
 {
+    public const STATUS_ACTIVE = 0;
+    public const STATUS_DELETED = 1;
+
     /**
      * {@inheritdoc}
      */
@@ -73,12 +76,44 @@ class Street extends ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
-            'locality_id' => 'Locality ID',
-            'deleted' => 'Deleted',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
+            'name' => 'Название',
+            'locality_id' => 'Населенный пункт',
+            'deleted' => 'Удалено',
+            'created_at' => 'Дата создания',
+            'updated_at' => 'Дата обновления',
         ];
+    }
+
+    public static function create(string $name, int $locality_id): static
+    {
+        $file = new static();
+        $file->name = $name;
+        $file->locality_id = $locality_id;
+        $file->deleted = self::STATUS_ACTIVE;
+        $file->created_at = new Expression('CURRENT_TIMESTAMP');
+
+        return $file;
+    }
+
+    public function edit(string $name, int $locality_id): void
+    {
+        $this->name = $name;
+        $this->locality_id = $locality_id;
+    }
+
+    public function remove(): void
+    {
+        $this->deleted = self::STATUS_DELETED;
+    }
+
+    public function restore(): void
+    {
+        $this->deleted = self::STATUS_ACTIVE;
+    }
+
+    public function isDeleted(): bool
+    {
+        return $this->deleted;
     }
 
     /**

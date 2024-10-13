@@ -15,7 +15,7 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($localityForm, 'name')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($localityForm, 'regionId')->dropDownList($regions, ['prompt' => 'Выберите регион']) ?>
+    <?= $form->field($localityForm, 'region_id')->dropDownList($regions, ['prompt' => 'Выберите регион']) ?>
 
 
     <div class="form-group">

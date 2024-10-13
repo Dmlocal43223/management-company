@@ -4,11 +4,11 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 /** @var yii\web\View $this */
-/** @var \backend\forms\search\RegionSearch $model */
+/** @var backend\forms\search\TicketHistorySearch $model */
 /** @var yii\widgets\ActiveForm $form */
 ?>
 
-<div class="region-search">
+<div class="ticket-history-search">
 
     <?php $form = ActiveForm::begin([
         'action' => ['index'],
@@ -17,13 +17,17 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'id') ?>
 
-    <?= $form->field($model, 'name') ?>
+    <?= $form->field($model, 'ticket_id') ?>
 
-    <?= $form->field($model, 'deleted')->checkbox() ?>
+    <?= $form->field($model, 'status_id') ?>
 
-    <?= $form->field($model, 'created_at') ?>
+    <?= $form->field($model, 'reason') ?>
 
-    <?= $form->field($model, 'updated_at') ?>
+    <?= $form->field($model, 'created_user_id') ?>
+
+    <?php // echo $form->field($model, 'created_at') ?>
+
+    <?php // echo $form->field($model, 'updated_at') ?>
 
     <div class="form-group">
         <?= Html::submitButton('Search', ['class' => 'btn btn-primary']) ?>

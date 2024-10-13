@@ -16,20 +16,11 @@ class LocalityRepository
         return Locality::findOne(['id' => $id]);
     }
 
-    public function save(Locality $region): void
+    public function save(Locality $locality): void
     {
-        if (!$region->save()) {
+        if (!$locality->save()) {
             throw new Exception('Ошибка сохранения.');
         }
-    }
-
-    public function findRegionNamesIndexedById(): array
-    {
-        return Locality::find()
-            ->select(['name', 'id'])
-            ->orderBy('name')
-            ->indexBy('id')
-            ->column();
     }
 
     public function getFilteredQuery(LocalitySearch $searchModel): ActiveQuery
@@ -40,12 +31,29 @@ class LocalityRepository
             'deleted' => $searchModel->deleted,
             'created_at' => $searchModel->created_at,
             'updated_at' => $searchModel->updated_at
-        ])
-            ->andFilterWhere(['ilike', 'name', $searchModel->name]);
+        ])->andFilterWhere(['ilike', 'name', $searchModel->name]);
     }
 
     public function getNoResultsQuery(): ActiveQuery
     {
         return Locality::find()->where('0=1');
+    }
+
+    public function findActiveNamesWithId(): array
+    {
+        return Locality::find()
+            ->select(['name', 'id'])
+            ->andWhere(['deleted' => Locality::STATUS_ACTIVE])
+            ->orderBy('name')
+            ->asArray()
+            ->all();
+    }
+
+    public function findByRegionId(int $regionId): array
+    {
+        return Locality::find()
+            ->andWhere(['region_id' => $regionId])
+            ->andWhere(['deleted' => Locality::STATUS_ACTIVE])
+            ->all();
     }
 }
