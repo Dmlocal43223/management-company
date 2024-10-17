@@ -42,9 +42,6 @@ AppAsset::register($this);
             ['label' => 'Информация', 'url' => ['/site/about']],
             ['label' => 'Отправить обращение', 'url' => ['/ticket/create']],
         ];
-        if (Yii::$app->user->isGuest) {
-            $menuItems[] = ['label' => 'Регистрация', 'url' => ['/site/signup']];
-        }
 
         echo Nav::widget([
             'options' => ['class' => 'navbar-nav me-auto mb-2 mb-md-0'],
@@ -59,7 +56,7 @@ AppAsset::register($this);
                     [
                         'label' => Yii::$app->user->identity->username,
                         'items' => [
-                            ['label' => 'Профиль', 'url' => ['/site/profile']],
+                            ['label' => 'Профиль', 'url' => ['/profile/view']],
                             [
                                 'label' => 'Выйти',
                                 'url' => '#',

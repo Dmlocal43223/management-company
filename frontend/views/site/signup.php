@@ -14,7 +14,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="site-signup">
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>Please fill out the following fields to signup:</p>
+    <p>Пожалуйста, заполните следующие поля для регистрации::</p>
 
     <div class="row">
         <div class="col-lg-5">
@@ -22,7 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             <?= $form->field($signupForm, 'username')->textInput(['autofocus' => true]) ?>
 
-            <?= $form->field($signupForm, 'email') ?>
+            <?= $form->field($signupForm, 'email')->textInput() ?>
 
             <?= $form->field($signupForm, 'password')->passwordInput() ?>
 

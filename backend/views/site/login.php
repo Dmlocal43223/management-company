@@ -13,6 +13,12 @@ $this->title = 'Вход';
     <div class="mt-5 offset-lg-3 col-lg-6">
         <h1><?= Html::encode($this->title) ?></h1>
 
+        <?php if (Yii::$app->session->hasFlash('error')): ?>
+            <div class="alert alert-danger">
+                <?= Yii::$app->session->getFlash('error') ?>
+            </div>
+        <?php endif; ?>
+
         <p>Пожалуйста, заполните следующие поля для входа:</p>
 
         <?php $form = ActiveForm::begin(['id' => 'login-form']); ?>

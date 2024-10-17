@@ -23,7 +23,7 @@ use yii\db\Expression;
  * @property string|null $created_at
  * @property string|null $updated_at
  *
- * @property File $avatarFile
+ * @property File $avatar
  * @property User $user
  */
 class UserInformation extends ActiveRecord
@@ -104,14 +104,20 @@ class UserInformation extends ActiveRecord
     public function edit(
         string $name,
         string $surname,
-        string $telegramId,
-        File $avatar
+        ?string $telegramId = null,
+        ?File $avatar = null
     ): void
     {
         $this->name = $name;
         $this->surname = $surname;
-        $this->telegram_id = $telegramId;
-        $this->avatar_file_id = $avatar->id;
+
+        if ($telegramId) {
+            $this->telegram_id = $telegramId;
+        }
+
+        if ($avatar) {
+            $this->avatar_file_id = $avatar->id;
+        }
     }
 
     /**
@@ -119,9 +125,9 @@ class UserInformation extends ActiveRecord
      *
      * @return ActiveQuery
      */
-    public function getAvatarFile(): ActiveQuery
+    public function getAvatar(): ActiveQuery
     {
-        return $this->hasOne(File::class, ['id' => 'avatar_file_id']);
+        return $this->hasOne(File::class, ['id' => 'avatar_file_id'])->andOnCondition(['deleted' => File::STATUS_ACTIVE]);
     }
 
     /**

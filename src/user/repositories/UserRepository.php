@@ -19,13 +19,24 @@ class UserRepository
     public function save(User $user): void
     {
         if (!$user->save()) {
-            throw new Exception('Ошибка сохранения.');
+            $errors = get_class($user) . '. ' . implode(', ', $user->getErrors());
+            throw new Exception("Ошибка сохранения {$errors}.");
         }
+    }
+
+    public function getUserWithDetails(int $userId): User
+    {
+        $user = User::find()
+            ->innerJoinWith(['userInformation'])
+            ->andWhere(['user.id' => $userId])
+            ->one();
+
+        return $user ?? throw new Exception("Пользователь {$userId} не найден");
     }
 
     public function findByUsername(string $userName): ?User
     {
-        return User::findOne(['username' => $userName, 'status' => User::STATUS_ACTIVE]);
+        return User::findOne(['username' => $userName]);
     }
 
     public function getFilteredQuery(UserSearch $searchModel): ActiveQuery

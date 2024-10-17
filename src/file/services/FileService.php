@@ -18,6 +18,7 @@ class FileService
         FileType::PHOTO_TYPE_ID => 'photos',
         FileType::PREVIEW_TYPE_ID => 'previews',
         FileType::DOCUMENT_TYPE_ID => 'documents',
+        FileType::AVATAR_TYPE_ID => 'avatars'
     ];
 
     private string $basePath;

@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace src\user\entities;
 
+use src\file\entities\File;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\db\BaseActiveRecord;
 use yii\web\IdentityInterface;
@@ -24,27 +26,13 @@ use yii\web\IdentityInterface;
  * @property integer $status
  * @property integer $created_at
  * @property integer $updated_at
- * @property string $password write-only password
+ *
+ * @property UserInformation $userInformation
  */
 class User extends ActiveRecord implements IdentityInterface
 {
     const STATUS_ACTIVE = 10;
     const STATUS_INACTIVE = 9;
-
-    public static function create(string $username, string $email, string $password): static
-    {
-        $user = new static();
-        $user->username = $username;
-        $user->email = $email;
-        $user->status = User::STATUS_ACTIVE;
-        $user->created_at = time();
-        $user->updated_at = time();
-        $user->setPassword($password);
-        $user->generateAuthKey();
-        $user->generateEmailVerificationToken();
-
-        return $user;
-    }
 
     /**
      * {@inheritdoc}
@@ -63,7 +51,7 @@ class User extends ActiveRecord implements IdentityInterface
             [
                 'class' => TimestampBehavior::class,
                 'attributes' => [
-                    BaseActiveRecord::EVENT_BEFORE_UPDATE => ['update_at'],
+                    BaseActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
                 ],
                 'value' => time(),
             ],
@@ -78,6 +66,52 @@ class User extends ActiveRecord implements IdentityInterface
         return [
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE ]],
         ];
+    }
+
+    public function attributeLabels(): array
+    {
+        return [
+            'id' => 'ID',
+            'username' => 'Логин',
+            'password_hash' => 'Хэш',
+            'password_reset_token' => 'Токен сброса',
+            'verification_token' => 'Токен верификации',
+            'email' => 'Почта',
+            'auth_key' => 'Ключ аутентификации',
+            'status' => 'Активен',
+            'created_at' => 'Дата создания',
+            'updated_at' => 'Дата обновления',
+        ];
+    }
+
+    public static function create(string $username, string $email, string $password): static
+    {
+        $user = new static();
+        $user->username = $username;
+        $user->email = $email;
+        $user->status = User::STATUS_ACTIVE;
+        $user->created_at = time();
+        $user->updated_at = time();
+        $user->setPassword($password);
+        $user->generateAuthKey();
+        $user->generateEmailVerificationToken();
+
+        return $user;
+    }
+
+    public function edit(string $email): void
+    {
+        $this->email = $email;
+    }
+
+    public function remove(): void
+    {
+        $this->status = self::STATUS_INACTIVE;
+    }
+
+    public function restore(): void
+    {
+        $this->status = self::STATUS_ACTIVE;
     }
 
     public function getFullName(): string
@@ -167,5 +201,10 @@ class User extends ActiveRecord implements IdentityInterface
     public function isActive(): bool
     {
         return $this->status === self::STATUS_ACTIVE;
+    }
+
+    public function getUserInformation(): ActiveQuery
+    {
+        return $this->hasOne(UserInformation::class, ['user_id' => 'id']);
     }
 }

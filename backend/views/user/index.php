@@ -1,13 +1,10 @@
 <?php
 
-use src\user\entities\User;
-use yii\grid\ActionColumn;
 use yii\grid\GridView;
 use yii\helpers\Html;
-use yii\helpers\Url;
 
 /** @var yii\web\View $this */
-/** @var \backend\forms\search\UserSearch $searchModel */
+/** @var backend\forms\search\UserSearch $searchModel */
 /** @var yii\data\ActiveDataProvider $dataProvider */
 
 $this->title = 'Пользователи';
@@ -25,30 +22,16 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            'id',
+            [
+                'attribute' => 'id',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return Html::a($model->id, ['view', 'id' => $model->id]);
+                },
+            ],
             'username',
             'email:email',
-            'status',
-            [
-                'attribute' => 'created_at',
-                'format' => 'raw',
-                'value' => function ($model) {
-                    return Yii::$app->formatter->asDatetime($model->created_at, 'php:Y-m-d H:i:s');
-                },
-            ],
-            [
-                'attribute' => 'updated_at',
-                'format' => 'raw',
-                'value' => function ($model) {
-                    return Yii::$app->formatter->asDatetime($model->updated_at, 'php:Y-m-d H:i:s');
-                },
-            ],
-            [
-                'class' => ActionColumn::class,
-                'urlCreator' => function ($action, User $model, $key, $index, $column) {
-                    return Url::toRoute([$action, 'id' => $model->id]);
-                 }
-            ],
+            'status'
         ],
     ]); ?>
 

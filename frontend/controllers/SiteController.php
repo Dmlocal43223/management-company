@@ -6,6 +6,7 @@ use common\forms\LoginForm;
 use common\forms\UserInformationForm;
 use DomainException;
 use frontend\forms\SignupForm;
+use src\file\repositories\FileRepository;
 use src\user\repositories\UserInformationRepository;
 use src\user\repositories\UserRepository;
 use src\user\services\UserService;
@@ -26,7 +27,7 @@ class SiteController extends Controller
     public function __construct($id, $module, $config = [])
     {
         $this->userRepository = new UserRepository();
-        $this->userService = new UserService($this->userRepository, new UserInformationRepository());
+        $this->userService = new UserService($this->userRepository, new UserInformationRepository(), new FileRepository());
 
         parent::__construct($id, $module, $config);
     }
@@ -156,7 +157,8 @@ class SiteController extends Controller
                     Yii::$app->session->setFlash('error', $exception->getMessage());
                 }
             } else {
-                Yii::$app->session->setFlash('error', 'Проверьте правильность заполнения форм.');
+                $errors = array_merge($signupForm->getErrorSummary(true), $userInformationForm->getErrorSummary(true));
+                Yii::$app->session->setFlash('error', 'Проверьте правильность заполнения форм. ' . implode(', ', $errors));
             }
         }
 

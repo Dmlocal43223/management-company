@@ -1,13 +1,14 @@
 <?php
 
+use src\user\entities\User;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 /** @var yii\web\View $this */
 /** @var src\user\entities\User $model */
 
-$this->title = $model->id;
-$this->params['breadcrumbs'][] = ['label' => 'Users', 'url' => ['index']];
+$this->title = $model->username;
+$this->params['breadcrumbs'][] = ['label' => 'Пользователи', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
@@ -16,29 +17,72 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
+        <?= Html::a('Обновить', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+
+        <?php if (!$model->isActive()): ?>
+            <?= Html::a('Восстановить', ['restore', 'id' => $model->id], [
+                'class' => 'btn btn-success',
+                'data' => [
+                    'confirm' => 'Вы уверены, что хотите восстановить этот элемент?',
+                    'method' => 'post',
+                ],
+            ]) ?>
+        <?php else: ?>
+            <?= Html::a('Удалить', ['delete', 'id' => $model->id], [
+                'class' => 'btn btn-danger',
+                'data' => [
+                    'confirm' => 'Вы уверены, что хотите удалить этот элемент?',
+                    'method' => 'post',
+                ],
+            ]) ?>
+        <?php endif ?>
+
+        <?= Html::a('Изменить пароль', ['change-password', 'id' => $model->id], ['class' => 'btn btn-secondary']) ?>
+        <?= Html::a('Роли', ['roles', 'user_id' => $model->id], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Объекты(Жилое)', ['houses', 'id' => $model->id], ['class' => 'btn btn-warning']) ?>
+        <?= Html::a('Объекты(Работа)', ['houses', 'id' => $model->id], ['class' => 'btn btn-warning']) ?>
     </p>
+
+    <div class="user-avatar" style="margin-bottom: 15px;">
+        <?= Html::img($model?->userInformation?->avatar?->source ?? Yii::$app->request->hostInfo . '/images/default_avatar.png', [
+            'alt' => 'Аватар пользователя',
+            'class' => 'img-thumbnail',
+            'style' => 'width:200px;height:200px;'
+        ]) ?>
+    </div>
 
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
             'id',
             'username',
-            'auth_key',
-            'password_hash',
-            'password_reset_token',
             'email:email',
-            'status',
-            'created_at',
-            'updated_at',
-            'verification_token',
+            [
+                'attribute' => 'userInformation.name',
+                'label' => 'Имя',
+            ],
+            [
+                'attribute' => 'userInformation.surname',
+                'label' => 'Фамилия',
+            ],
+            [
+                'attribute' => 'userInformation.telegram_id',
+                'label' => 'Телеграм',
+            ],
+            [
+                'attribute' => 'status',
+                'value' => function ($model) {
+                    return $model->status === User::STATUS_ACTIVE  ? 'Активен' : 'Удален';
+                },
+            ],
+            [
+                'attribute' => 'created_at',
+                'format' => ['datetime', 'php:Y-m-d H:i:s'],
+            ],
+            [
+                'attribute' => 'updated_at',
+                'format' => ['datetime', 'php:Y-m-d H:i:s'],
+            ],
         ],
     ]) ?>
 

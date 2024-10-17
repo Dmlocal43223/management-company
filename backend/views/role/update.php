@@ -4,10 +4,11 @@ use yii\helpers\Html;
 
 /** @var yii\web\View $this */
 /** @var src\role\entities\Role $model */
+/** @var backend\forms\RoleForm $roleForm */
 
-$this->title = 'Update Role: ' . $model->name;
-$this->params['breadcrumbs'][] = ['label' => 'Roles', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'id' => $model->id]];
+$this->title = 'Обновить роль: ' . $model->name;
+$this->params['breadcrumbs'][] = ['label' => 'Роли', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'name' => $model->name]];
 $this->params['breadcrumbs'][] = 'Update';
 ?>
 <div class="role-update">
@@ -16,6 +17,7 @@ $this->params['breadcrumbs'][] = 'Update';
 
     <?= $this->render('_form', [
         'model' => $model,
+        'roleForm' => $roleForm
     ]) ?>
 
 </div>

@@ -4,10 +4,12 @@ use yii\helpers\Html;
 
 /** @var yii\web\View $this */
 /** @var src\user\entities\User $model */
+/** @var common\forms\UserForm $userForm */
+/** @var common\forms\UserInformationForm $userInformationForm */
 
-$this->title = 'Update User: ' . $model->id;
-$this->params['breadcrumbs'][] = ['label' => 'Users', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
+$this->title = 'Обновить пользователя: ' . $model->username;
+$this->params['breadcrumbs'][] = ['label' => 'Пользователи', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => $model->username, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Обновить';
 ?>
 <div class="user-update">
@@ -16,6 +18,8 @@ $this->params['breadcrumbs'][] = 'Обновить';
 
     <?= $this->render('_form', [
         'model' => $model,
+        'userForm' => $userForm,
+        'userInformationForm' => $userInformationForm,
     ]) ?>
 
 </div>

@@ -17,7 +17,8 @@ class UserInformationRepository
     public function save(UserInformation $userInformation): void
     {
         if (!$userInformation->save()) {
-            throw new Exception('Ошибка сохранения.');
+            $errors = get_class($userInformation) . ': ' . implode(', ', $userInformation->getErrorSummary(true));
+            throw new Exception("Ошибка сохранения {$errors}");
         }
     }
 }

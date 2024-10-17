@@ -1,10 +1,10 @@
 <?php
 
+use yii\bootstrap5\ActiveForm;
 use yii\helpers\Html;
-use yii\widgets\ActiveForm;
 
 /** @var yii\web\View $this */
-/** @var src\role\entities\Role $model */
+/** @var backend\forms\RoleForm $roleForm */
 /** @var yii\widgets\ActiveForm $form */
 ?>
 
@@ -12,16 +12,14 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
+    <?php if (Yii::$app->controller->action->id === 'create'): ?>
+        <?= $form->field($roleForm, 'name')->textInput(['maxlength' => true]) ?>
+    <?php endif; ?>
 
-    <?= $form->field($model, 'deleted')->checkbox() ?>
-
-    <?= $form->field($model, 'created_at')->textInput() ?>
-
-    <?= $form->field($model, 'updated_at')->textInput() ?>
+    <?= $form->field($roleForm, 'description')->textInput(['maxlength' => true]) ?>
 
     <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+        <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

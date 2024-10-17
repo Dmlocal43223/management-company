@@ -4,7 +4,6 @@ use yii\bootstrap5\ActiveForm;
 use yii\helpers\Html;
 
 /** @var yii\web\View $this */
-/** @var src\user\entities\User $model */
 /** @var common\forms\UserForm $userForm */
 /** @var common\forms\UserInformationForm $userInformationForm */
 /** @var yii\widgets\ActiveForm $form */

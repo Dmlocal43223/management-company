@@ -2,7 +2,9 @@
 
 namespace common\forms;
 
+use src\user\entities\User;
 use src\user\repositories\UserRepository;
+use Yii;
 use yii\base\Model;
 
 /**
@@ -22,7 +24,17 @@ class LoginForm extends Model
         return [
             [['username', 'password'], 'required'],
             ['rememberMe', 'boolean'],
+            ['username', 'exist', 'targetClass' => User::class, 'targetAttribute' => 'username', 'message' => 'Пользователь с таким именем не найден.'],
             ['password', 'validatePassword'],
+        ];
+    }
+
+    public function attributeLabels(): array
+    {
+        return [
+            'username' => 'Логин',
+            'password' => 'Пароль',
+            'rememberMe' => 'Запомнить',
         ];
     }
 
@@ -31,14 +43,19 @@ class LoginForm extends Model
      * This method serves as the inline validation for password.
      *
      * @param string $attribute the attribute currently being validated
-     * @param array $params the additional name-value pairs given in the rule
+     * @param array|null $params the additional name-value pairs given in the rule
      */
     public function validatePassword(string $attribute, array $params = null): void
     {
         if (!$this->hasErrors()) {
             $user = (new UserRepository())->findByUsername($this->username);
-            if (!$user || !$user->validatePassword($this->password)) {
-                $this->addError($attribute, 'Incorrect username or password.');
+
+            if (!$user->isActive()) {
+                Yii::$app->session->setFlash('error', 'Пользователь удален.');
+            }
+
+            if (!$user->validatePassword($this->password)) {
+                $this->addError($attribute, 'Неверный пароль.');
             }
         }
     }

@@ -13,21 +13,24 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="site-login">
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>Пожалуйста, заполните следующие поля для входа::</p>
+    <p>Пожалуйста, заполните следующие поля для входа:</p>
 
     <div class="row">
         <div class="col-lg-5">
             <?php $form = ActiveForm::begin(['id' => 'login-form']); ?>
 
-                <?= $form->field($loginForm, 'username')->textInput(['autofocus' => true]) ?>
+            <?= $form->field($loginForm, 'username')->textInput(['autofocus' => true]) ?>
 
-                <?= $form->field($loginForm, 'password')->passwordInput() ?>
+            <?= $form->field($loginForm, 'password')->passwordInput() ?>
 
-                <?= $form->field($loginForm, 'rememberMe')->checkbox() ?>
+            <?= $form->field($loginForm, 'rememberMe')->checkbox() ?>
 
-                <div class="form-group">
-                    <?= Html::submitButton('Войти', ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
-                </div>
+            <div class="form-group">
+                <?= Html::submitButton('Войти', ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
+                <?php if (Yii::$app->user->isGuest): ?>
+                    <?= Html::a('Регистрация', ['/site/signup'], ['class' => 'btn btn-secondary ml-2']) ?>
+                <?php endif; ?>
+            </div>
 
             <?php ActiveForm::end(); ?>
         </div>

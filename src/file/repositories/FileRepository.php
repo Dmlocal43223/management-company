@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace src\file\repositories;
 
-use RuntimeException;
 use src\file\entities\File;
 use src\file\entities\FileType;
 use src\news\entities\News;
 use src\ticket\entities\Ticket;
+use src\user\entities\User;
+use yii\db\Exception;
 
 class FileRepository
 {
@@ -20,7 +21,8 @@ class FileRepository
     public function save(File $file): void
     {
         if (!$file->save()) {
-            throw new RuntimeException('Ошибка сохранения.');
+            $errors = get_class($file) . '. ' . implode(', ', $file->getErrors());
+            throw new Exception("Ошибка сохранения {$errors}.");
         }
     }
 
@@ -29,6 +31,7 @@ class FileRepository
         return File::find()
             ->innerJoin('news_file', "news_file.file_id = file.id and news_file.news_id = {$news->id}")
             ->andWhere(['file.hash' => $hash])
+            ->andWhere(['file.deleted' => File::STATUS_ACTIVE])
             ->exists();
     }
 
@@ -37,6 +40,16 @@ class FileRepository
         return File::find()
             ->innerJoin('ticket_file', "ticket_file.file_id = file.id and ticket_file.ticket_id = {$ticket->id}")
             ->andWhere(['file.hash' => $hash])
+            ->andWhere(['file.deleted' => File::STATUS_ACTIVE])
+            ->exists();
+    }
+
+    public function existsByHashAndUser(User $user, string $hash): bool
+    {
+        return File::find()
+            ->innerJoin('user_information', "user_information.avatar_file_id = file.id and user_information.user_id = {$user->id}")
+            ->andWhere(['file.hash' => $hash])
+            ->andWhere(['file.deleted' => File::STATUS_ACTIVE])
             ->exists();
     }
 
