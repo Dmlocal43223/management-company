@@ -16,7 +16,7 @@ class m240930_175731_create_user_tenant_table extends Migration
             'id' => $this->primaryKey(),
             'user_id' => $this->integer()->notNull(),
             'apartment_id' => $this->integer()->notNull(),
-            'is_active' => $this->boolean()->notNull()->defaultValue(false),
+            'is_active' => $this->boolean()->notNull()->defaultValue(true),
             'created_at' => $this->dateTime()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
             'updated_at' => $this->dateTime()->notNull()->defaultExpression('CURRENT_TIMESTAMP')
         ]);

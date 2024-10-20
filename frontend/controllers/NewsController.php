@@ -25,6 +25,7 @@ class NewsController extends Controller
 
         parent::__construct($id, $module, $config);
     }
+
     /**
      * Lists all News models.
      *

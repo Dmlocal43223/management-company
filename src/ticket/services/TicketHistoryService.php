@@ -61,6 +61,23 @@ class TicketHistoryService
         }
     }
 
+    public function createUnAssign(Ticket $ticket, User $worker): TicketHistory
+    {
+        $ticketStatus = $this->ticketStatusRepository->findById(TicketStatus::STATUS_NEW_ID);
+        $reason = "Работник {$worker->username}[{$worker->id}] снят с заявки.";
+        $history = TicketHistory::create($ticket, $ticketStatus, $reason);
+
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            $this->ticketHistoryRepository->save($history);
+            $transaction->commit();
+            return $history;
+        } catch (Exception $exception) {
+            $transaction->rollBack();
+            throw $exception;
+        }
+    }
+
     public function createClose(Ticket $ticket, string $comment): TicketHistory
     {
         $ticketStatus = $this->ticketStatusRepository->findById(TicketStatus::STATUS_CLOSED_ID);
@@ -80,8 +97,42 @@ class TicketHistoryService
 
     public function createCancel(Ticket $ticket, string $comment): TicketHistory
     {
-        $ticketStatus = $this->ticketStatusRepository->findById(TicketStatus::STATUS_CANCEL_ID);
+        $ticketStatus = $this->ticketStatusRepository->findById(TicketStatus::STATUS_CANCELED_ID);
         $reason = "Заявка отменена. {$comment}";
+        $history = TicketHistory::create($ticket, $ticketStatus, $reason);
+
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            $this->ticketHistoryRepository->save($history);
+            $transaction->commit();
+            return $history;
+        } catch (Exception $exception) {
+            $transaction->rollBack();
+            throw $exception;
+        }
+    }
+
+    public function createDeleted(Ticket $ticket): TicketHistory
+    {
+        $ticketStatus = $this->ticketStatusRepository->findById(TicketStatus::STATUS_DELETED_ID);
+        $reason = "Заявка удалена.";
+        $history = TicketHistory::create($ticket, $ticketStatus, $reason);
+
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            $this->ticketHistoryRepository->save($history);
+            $transaction->commit();
+            return $history;
+        } catch (Exception $exception) {
+            $transaction->rollBack();
+            throw $exception;
+        }
+    }
+
+    public function createRestore(Ticket $ticket): TicketHistory
+    {
+        $ticketStatus = $this->ticketStatusRepository->findById(TicketStatus::STATUS_NEW_ID);
+        $reason = "Заявка восстановлена.";
         $history = TicketHistory::create($ticket, $ticketStatus, $reason);
 
         $transaction = Yii::$app->db->beginTransaction();

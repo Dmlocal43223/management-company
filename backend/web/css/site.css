@@ -88,3 +88,20 @@ a.desc:after {
 .nav > li > form > button.logout:focus {
     outline: none;
 }
+
+.custom-navbar {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.custom-navbar .navbar-nav .nav-link {
+    color: white;
+}
+
+.custom-navbar .navbar-brand {
+    color: white;
+}
+
+.custom-navbar .nav-link:hover {
+    color: #e2e2e2;
+}

@@ -19,7 +19,6 @@ main > .container, main > .container-fluid
     font-style: italic;
 }
 
-/* add sorting icons to gridview sort links */
 a.asc:after, a.desc:after {
     content: '';
     left: 3px;
@@ -65,7 +64,6 @@ a.desc:after {
     margin: 0 0 15px 0;
 }
 
-/* align the logout "link" (button in form) of the navbar */
 .navbar form > button.logout {
     padding-top: 7px;
     color: rgba(255, 255, 255, 0.5);
@@ -90,7 +88,6 @@ a.desc:after {
     outline: none;
 }
 
-/* style breadcrumb widget as in previous bootstrap versions */
 .breadcrumb {
     background-color: var(--bs-gray-200);
     border-radius: .25rem;
@@ -111,20 +108,41 @@ a.desc:after {
 }
 
 .news-preview {
-    margin-right: 25px; /* Отступ между изображением и заголовком */
+    margin-right: 25px;
 }
 
 .news-preview-image {
-    /*width: 100%; !* Изображение будет занимать всю доступную ширину контейнера *!*/
-    /*max-width: 150px; !* Максимальная ширина изображения *!*/
-    /*height: auto; !* Высота будет автоматически подстраиваться *!*/
-    width: 150px; /* Установите желаемую ширину */
-    height: 150px; /* Установите желаемую высоту */
-    object-fit: cover; /* Обеспечивает правильное отображение изображения */
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
 }
 
 .news-title {
-    flex: 1; /* Позволяет заголовку занимать оставшееся пространство */
-    margin-top: 3px; /* Отступ сверху для названия */
+    flex: 1;
+    margin-top: 3px;
+}
 
+.house-item {
+    display: flex;
+    align-items: flex-start;
+    margin: 20px 0;
+    padding: 20px 0;
+    border-top: 1px solid #eee;
+}
+
+.custom-navbar {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.custom-navbar .navbar-nav .nav-link {
+    color: white;
+}
+
+.custom-navbar .navbar-brand {
+    color: white;
+}
+
+.custom-navbar .nav-link:hover {
+    color: #e2e2e2;
 }

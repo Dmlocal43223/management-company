@@ -6,6 +6,7 @@
 
 use common\widgets\Alert;
 use frontend\assets\AppAsset;
+use src\notification\repositories\NotificationRepository;
 use yii\bootstrap5\Breadcrumbs;
 use yii\bootstrap5\Html;
 use yii\bootstrap5\Nav;
@@ -33,7 +34,7 @@ AppAsset::register($this);
             'brandLabel' => Yii::$app->name,
             'brandUrl' => Yii::$app->homeUrl,
             'options' => [
-                'class' => 'navbar navbar-expand-md navbar-dark bg-dark fixed-top',
+                'class' => 'navbar navbar-expand-md custom-navbar fixed-top',
             ],
         ]);
         $menuItems = [
@@ -50,6 +51,7 @@ AppAsset::register($this);
         if (Yii::$app->user->isGuest) {
             echo Html::tag('div', Html::a('Войти', ['/site/login'], ['class' => ['btn btn-link login text-decoration-none']]), ['class' => ['d-flex']]);
         } else {
+            $unreadCount = (new NotificationRepository())->getUnReadNotificationCountByUser(Yii::$app->user->id);
             echo Nav::widget([
                 'options' => ['class' => 'navbar-nav'],
                 'items' => [
@@ -57,6 +59,8 @@ AppAsset::register($this);
                         'label' => Yii::$app->user->identity->username,
                         'items' => [
                             ['label' => 'Профиль', 'url' => ['/profile/view']],
+                            ['label' => 'Заявки', 'url' => ['/ticket/index']],
+                            ['label' => 'Оповещения' . ($unreadCount > 0 ? " ({$unreadCount})" : ''), 'url' => ['/notification/index']],
                             [
                                 'label' => 'Выйти',
                                 'url' => '#',

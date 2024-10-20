@@ -38,4 +38,11 @@ class TicketStatusRepository
     {
         return TicketStatus::find()->where('0=1');
     }
+
+    public function getClosingStatuses(): array
+    {
+        return TicketStatus::find()
+            ->andWhere(['in', 'ticket_status.id', TicketStatus::CLOSING_STATUS_IDS])
+            ->all();
+    }
 }

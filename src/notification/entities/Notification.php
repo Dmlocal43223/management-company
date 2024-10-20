@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace src\notification\entities;
 
 use src\user\entities\User;
+use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -28,6 +29,9 @@ use yii\db\Expression;
  */
 class Notification extends ActiveRecord
 {
+    public const READ = 1;
+    public const UN_READ = 0;
+
     /**
      * {@inheritdoc}
      */
@@ -77,14 +81,42 @@ class Notification extends ActiveRecord
     {
         return [
             'id' => 'ID',
-            'title' => 'Title',
-            'body' => 'Body',
-            'user_id' => 'User ID',
-            'is_read' => 'Is Read',
-            'type_id' => 'Type ID',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
+            'title' => 'Заголовок',
+            'body' => 'Содержание',
+            'user_id' => 'Пользователь',
+            'is_read' => 'Прочитано',
+            'type_id' => 'Тип',
+            'created_at' => 'Дата создания',
+            'updated_at' => 'Дата обновления',
         ];
+    }
+
+    public static function create(string $title, string $body, User $user, NotificationType $type): static
+    {
+        $notification = new static();
+        $notification->title = $title;
+        $notification->body = $body;
+        $notification->user_id = $user->id;
+        $notification->is_read = self::UN_READ;
+        $notification->type_id = $type->id;
+        $notification->created_at = new Expression('CURRENT_TIMESTAMP');
+
+        return $notification;
+    }
+
+    public function read(): void
+    {
+        $this->is_read = self::READ;
+    }
+
+    public function unRead(): void
+    {
+        $this->is_read = self::UN_READ;
+    }
+
+    public function isRead(): bool
+    {
+        return $this->is_read;
     }
 
     /**

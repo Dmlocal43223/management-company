@@ -34,11 +34,12 @@ use yii\widgets\ActiveForm;
         'disabled' => 'disabled'
     ]) ?>
 
-    <?= $form->field($houseForm, 'is_create_apartments')->checkbox(['id' => 'create-apartments-checkbox']) ?>
+    <?php if (Yii::$app->controller->action->id === 'create'): ?>
+        <?= $form->field($houseForm, 'is_create_apartments')->checkbox(['id' => 'create-apartments-checkbox']) ?>
 
-    <div id="apartment-count-field" style="display:none;">
-        <?= $form->field($houseForm, 'apartment_count')->textInput(['maxlength' => true])->label('Количество квартир') ?>
-    </div>
+        <div id="apartment-count-field" style="display:none;">
+            <?= $form->field($houseForm, 'apartment_count')->textInput(['maxlength' => true])->label('Количество квартир') ?>
+        </div>    <?php endif; ?>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>

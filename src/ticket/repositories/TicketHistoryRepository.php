@@ -18,7 +18,8 @@ class TicketHistoryRepository
     public function save(TicketHistory $ticketHistory): void
     {
         if (!$ticketHistory->save()) {
-            throw new Exception('Ошибка сохранения.');
+            $errors =  implode(' ', $ticketHistory->getErrorSummary(true));
+            throw new Exception("Ошибка сохранения. {$errors}");
         }
     }
 }

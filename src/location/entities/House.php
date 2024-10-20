@@ -123,6 +123,11 @@ class House extends ActiveRecord
         return $this->deleted;
     }
 
+    public function getAddress(): string
+    {
+        return "{$this->street->locality->region->name}, {$this->street->locality->name}, {$this->street->name}, {$this->number}";
+    }
+
     /**
      * Gets query for [[HouseNotificationSettings]].
      *

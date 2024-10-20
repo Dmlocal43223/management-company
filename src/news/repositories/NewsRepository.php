@@ -56,7 +56,7 @@ class NewsRepository
 
     public function getQuery(): ActiveQuery
     {
-        return News::find();
+        return News::find()->andWhere(['deleted' => News::STATUS_ACTIVE]);
     }
 
     public function getNoResultsQuery(): ActiveQuery

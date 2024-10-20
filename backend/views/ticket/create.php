@@ -3,7 +3,10 @@
 use yii\helpers\Html;
 
 /** @var yii\web\View $this */
-/** @var src\ticket\entities\Ticket $model */
+/** @var common\forms\TicketForm $ticketForm */
+/** @var common\forms\TicketFileForm $fileForm */
+/** @var array $types */
+/** @var array $houses */
 
 $this->title = 'Создать заявку';
 $this->params['breadcrumbs'][] = ['label' => 'Заявки', 'url' => ['index']];
@@ -14,7 +17,10 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <?= $this->render('_form', [
-        'model' => $model,
+        'ticketForm' => $ticketForm,
+        'fileForm' => $fileForm,
+        'types' => $types,
+        'houses' => $houses
     ]) ?>
 
 </div>

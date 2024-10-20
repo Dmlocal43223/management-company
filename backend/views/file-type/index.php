@@ -31,31 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 },
             ],
             'name',
-            'deleted:boolean',
-            [
-                'attribute' => 'created_at',
-                'filter' => DatePicker::widget([
-                    'model' => $searchModel,
-                    'attribute' => 'created_at',
-                    'options' => ['placeholder' => 'Выберите дату'],
-                    'pluginOptions' => [
-                        'autoclose' => true,
-                        'format' => 'yyyy-mm-dd',
-                    ],
-                ]),
-            ],
-            [
-                'attribute' => 'updated_at',
-                'filter' => DatePicker::widget([
-                    'model' => $searchModel,
-                    'attribute' => 'updated_at',
-                    'options' => ['placeholder' => 'Выберите дату'],
-                    'pluginOptions' => [
-                        'autoclose' => true,
-                        'format' => 'yyyy-mm-dd',
-                    ],
-                ]),
-            ],
+            'deleted:boolean'
         ],
     ]); ?>
 

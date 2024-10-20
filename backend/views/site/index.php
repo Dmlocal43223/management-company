@@ -1,53 +1,117 @@
 <?php
 
+use kartik\daterange\DateRangePicker;
+use kartik\grid\GridView;
+use src\ticket\entities\Ticket;
+use src\ticket\entities\TicketStatus;
+use yii\bootstrap5\ActiveForm;
+use yii\helpers\Html;
+
 /** @var yii\web\View $this */
-
-$this->title = 'Главная';
+/** @var yii\data\ActiveDataProvider $dataProvider */
+/** @var backend\forms\search\TicketSearch $searchModel */
 ?>
-<div class="site-index">
 
-    <div class="jumbotron text-center bg-transparent">
-        <h1 class="display-4">Congratulations!</h1>
-
-        <p class="lead">You have successfully created your Yii-powered application.</p>
-
-        <p><a class="btn btn-lg btn-success" href="https://www.yiiframework.com">Get started with Yii</a></p>
-    </div>
-
-    <div class="body-content">
-
-        <div class="row">
-            <div class="col-lg-4">
-                <h2>Heading</h2>
-
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
-
-                <p><a class="btn btn-outline-secondary" href="https://www.yiiframework.com/doc/">Yii Documentation &raquo;</a></p>
-            </div>
-            <div class="col-lg-4">
-                <h2>Heading</h2>
-
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
-
-                <p><a class="btn btn-outline-secondary" href="https://www.yiiframework.com/forum/">Yii Forum &raquo;</a></p>
-            </div>
-            <div class="col-lg-4">
-                <h2>Heading</h2>
-
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
-
-                <p><a class="btn btn-outline-secondary" href="https://www.yiiframework.com/extensions/">Yii Extensions &raquo;</a></p>
-            </div>
-        </div>
-
-    </div>
+<div style="border: 1px solid #000; padding: 20px; border-radius: 5px">
+    <?php
+    $form = ActiveForm::begin(['method' => 'get']);
+    echo $form->field($searchModel, 'house_id')->label('Объект');
+    echo $form->field($searchModel, 'created_at_range')->widget(DateRangePicker::class, [
+        'pluginOptions' => [
+            'locale' => [
+                'format' => 'YYYY-MM-DD',
+                'separator' => ' - ',
+            ],
+        ],
+    ])->label('Дата создания');
+    echo Html::submitButton('Поиск', ['class' => 'btn btn-primary']);
+    ActiveForm::end();
+    ?>
 </div>
+<br>
+
+<?php
+echo GridView::widget([
+    'dataProvider' => $dataProvider,
+    'columns' => [
+        [
+            'attribute' => 'house_id',
+            'label' => 'Объект',
+        ],
+        [
+            'attribute' => 'deleted_count',
+            'label' => 'Удаленные',
+            'format' => 'raw',
+            'value' => function ($model) use ($searchModel) {
+                return Html::a($model['deleted_count'], [
+                    'ticket/index',
+                    'TicketSearch[deleted]' => Ticket::STATUS_DELETED,
+                    'TicketSearch[house_id]' => $model['house_id'],
+                    'TicketSearch[created_at_range]' => $searchModel['created_at_range'],
+                ], [
+                    'data-pjax' => '0'
+                ]);
+            },
+        ],
+        [
+            'attribute' => 'new_count',
+            'label' => 'Новые',
+            'format' => 'raw',
+            'value' => function ($model) use ($searchModel) {
+                return Html::a($model['new_count'], [
+                    'ticket/index',
+                    'TicketSearch[status_id]' => TicketStatus::STATUS_NEW_ID,
+                    'TicketSearch[house_id]' => $model['house_id'],
+                    'TicketSearch[created_at_range]' => $searchModel['created_at_range'],
+                ], [
+                    'data-pjax' => '0'
+                ]);
+            },
+        ],
+        [
+            'attribute' => 'processed_count',
+            'label' => 'В работ',
+            'format' => 'raw',
+            'value' => function ($model) use ($searchModel) {
+                return Html::a($model['processed_count'], [
+                    'ticket/index',
+                    'TicketSearch[status_id]' => TicketStatus::STATUS_PROCESSED_ID,
+                    'TicketSearch[house_id]' => $model['house_id'],
+                    'TicketSearch[created_at_range]' => $searchModel['created_at_range'],
+                ], [
+                    'data-pjax' => '0'
+                ]);
+            },
+        ],
+        [
+            'attribute' => 'closed_count',
+            'label' => 'Закрытые',
+            'format' => 'raw',
+            'value' => function ($model) use ($searchModel) {
+                return Html::a($model['closed_count'], [
+                    'ticket/index',
+                    'TicketSearch[status_id]' => TicketStatus::STATUS_CLOSED_ID,
+                    'TicketSearch[house_id]' => $model['house_id'],
+                    'TicketSearch[created_at_range]' => $searchModel['created_at_range'],
+                ], [
+                    'data-pjax' => '0'
+                ]);
+            },
+        ],
+        [
+            'attribute' => 'canceled_count',
+            'label' => 'Отмененные',
+            'format' => 'raw',
+            'value' => function ($model) use ($searchModel) {
+                return Html::a($model['canceled_count'], [
+                    'ticket/index',
+                    'TicketSearch[status_id]' => TicketStatus::STATUS_CANCELED_ID,
+                    'TicketSearch[house_id]' => $model['house_id'],
+                    'TicketSearch[created_at_range]' => $searchModel['created_at_range'],
+                ], [
+                    'data-pjax' => '0'
+                ]);
+            },
+        ]
+    ],
+]);

@@ -3,10 +3,12 @@
 namespace frontend\controllers;
 
 use backend\forms\search\TicketSearch;
-use backend\forms\TicketForm;
+use common\forms\TicketFileForm;
+use common\forms\TicketForm;
 use Exception;
-use frontend\forms\TicketFileForm;
 use src\location\repositories\ApartmentRepository;
+use src\location\repositories\HouseRepository;
+use src\notification\repositories\NotificationTypeRepository;
 use src\role\repositories\RoleRepository;
 use src\ticket\entities\Ticket;
 use src\ticket\repositories\TicketHistoryRepository;
@@ -14,6 +16,7 @@ use src\ticket\repositories\TicketRepository;
 use src\ticket\repositories\TicketStatusRepository;
 use src\ticket\repositories\TicketTypeRepository;
 use src\ticket\services\TicketService;
+use src\user\repositories\UserRepository;
 use src\user\repositories\UserWorkerRepository;
 use Yii;
 use yii\data\ActiveDataProvider;
@@ -42,7 +45,10 @@ class TicketController extends Controller
             new UserWorkerRepository(),
             new TicketTypeRepository(),
             new TicketStatusRepository(),
-            new TicketHistoryRepository(),
+            $this->ticketHistoryRepository,
+            new HouseRepository(),
+            new NotificationTypeRepository(),
+            new UserRepository(),
             new RoleRepository(Yii::$app->authManager)
         );
 
@@ -51,30 +57,28 @@ class TicketController extends Controller
 
     public function actionIndex(): string
     {
-        $searchModel = new TicketSearch();
-        $searchModel->load($this->request->queryParams);
-
-        if (!$searchModel->validate()) {
-            $query = $this->ticketRepository->getNoResultsQuery();
-        } else {
-            $query = $this->ticketRepository->getFilteredQueryByUser($searchModel);
-        }
-
         $dataProvider = new ActiveDataProvider([
-            'query' => $query,
+            'query' => $this->ticketRepository->getFilteredQueryByUser(new TicketSearch()),
         ]);
 
         return $this->render('index', [
             'dataProvider' => $dataProvider,
-            'searchModel' => $searchModel
         ]);
     }
 
     public function actionView(int $id): string
     {
         $model = $this->findModel($id);
-        $dataProvider = new ArrayDataProvider([
+
+        $historyDataProvider = new ArrayDataProvider([
             'allModels' => $model->ticketHistories,
+            'pagination' => [
+                'pageSize' => 10,
+            ],
+        ]);
+
+        $documentDataProvider = new ArrayDataProvider([
+            'allModels' => $model->files,
             'pagination' => [
                 'pageSize' => 10,
             ],
@@ -82,7 +86,8 @@ class TicketController extends Controller
 
         return $this->render('view', [
             'model' => $model,
-            'dataProvider' => $dataProvider
+            'historyDataProvider' => $historyDataProvider,
+            'documentDataProvider' => $documentDataProvider
         ]);
     }
 
@@ -116,7 +121,7 @@ class TicketController extends Controller
 
     protected function findModel(int $id): Ticket
     {
-        $model = $this->ticketRepository->findById($id);
+        $model = $this->ticketRepository->findWithRelationById($id);
 
         if (!$model) {
             throw new NotFoundHttpException('The requested page does not exist.');

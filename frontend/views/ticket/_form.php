@@ -1,11 +1,11 @@
 <?php
 
-use frontend\forms\TicketFileForm;
+use common\forms\TicketFileForm;
 use yii\bootstrap5\ActiveForm;
 use yii\helpers\Html;
 
 /** @var yii\web\View $this */
-/** @var backend\forms\TicketForm $ticketForm */
+/** @var \common\forms\TicketForm $ticketForm */
 /** @var TicketFileForm $fileForm */
 /** @var yii\bootstrap5\ActiveForm $form */
 /** @var array $apartments */

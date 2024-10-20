@@ -4,8 +4,9 @@ use yii\helpers\Html;
 
 /** @var yii\web\View $this */
 /** @var src\ticket\entities\Ticket $model */
+/** @var common\forms\TicketForm $ticketForm */
 
-$this->title = 'Обновить заявку: ' . $model->id;
+$this->title = 'Обновить заявку: ' . $model->number;
 $this->params['breadcrumbs'][] = ['label' => 'Заявки', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Обновить';
@@ -15,7 +16,7 @@ $this->params['breadcrumbs'][] = 'Обновить';
     <h1><?= Html::encode($this->title) ?></h1>
 
     <?= $this->render('_form', [
-        'model' => $model,
+        'ticketForm' => $ticketForm
     ]) ?>
 
 </div>

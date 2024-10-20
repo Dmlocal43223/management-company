@@ -9,6 +9,7 @@ use Exception;
 use src\location\entities\House;
 use src\user\entities\User;
 use src\user\entities\UserWorker;
+use Yii;
 use yii\db\ActiveQuery;
 
 class HouseRepository
@@ -80,5 +81,31 @@ class HouseRepository
             ->innerJoinWith('street.locality.region')
             ->andWhere(['house.deleted' => House::STATUS_ACTIVE])
             ->all();
+    }
+
+    public function getFormattedApartmentAddressesByUser(User $user): array
+    {
+        $houses = $this->findWorkerHouses($user);
+
+        $formattedApartmentAddresses = [];
+
+        /** @var House $house */
+        foreach ($houses as $house) {
+            $addressParts = [
+                $house->street->locality->region->name,
+                $house->street->locality->name,
+                $house->street->name,
+                'д. ' . $house->number
+            ];
+
+            $formattedApartmentAddresses[$house->id] = implode(', ', array_filter($addressParts));
+        }
+
+        return $formattedApartmentAddresses;
+    }
+
+    public function getQuery(): ActiveQuery
+    {
+        return House::find()->andWhere(['deleted' => House::STATUS_ACTIVE]);
     }
 }

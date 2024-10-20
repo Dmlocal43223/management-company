@@ -1,5 +1,7 @@
 <?php
 
+use kartik\date\DatePicker;
+use kartik\daterange\DateRangePicker;
 use yii\helpers\Html;
 use yii\grid\GridView;
 
@@ -31,14 +33,56 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             'number',
             'status_id',
-            'description:ntext',
+//            'description:ntext',
             'house_id',
             'apartment_id',
             'type_id',
             'deleted:boolean',
-            'closed_at',
-            'created_at',
-            'updated_at',
+            [
+                'attribute' => 'closed_at',
+                'filter' => DateRangePicker::widget([
+                    'model' => $searchModel,
+                    'attribute' => 'closed_at_range',
+                    'pluginOptions' => [
+                        'locale' => [
+                            'format' => 'YYYY-MM-DD',
+                            'separator' => ' - ',
+                        ],
+                    ],
+                    'options' => ['class' => 'form-control', 'style' => 'width: 200px;']
+                ]),
+                'format' => ['date', 'php:Y-m-d'],
+            ],
+            [
+                'attribute' => 'created_at',
+                'filter' => DateRangePicker::widget([
+                    'model' => $searchModel,
+                    'attribute' => 'created_at_range',
+                    'pluginOptions' => [
+                        'locale' => [
+                            'format' => 'YYYY-MM-DD',
+                            'separator' => ' - ',
+                        ],
+                    ],
+                    'options' => ['class' => 'form-control', 'style' => 'width: 200px;']
+                ]),
+                'format' => ['date', 'php:Y-m-d'],
+            ],
+            [
+                'attribute' => 'updated_at',
+                'filter' => DateRangePicker::widget([
+                    'model' => $searchModel,
+                    'attribute' => 'updated_at_range',
+                    'pluginOptions' => [
+                        'locale' => [
+                            'format' => 'YYYY-MM-DD',
+                            'separator' => ' - ',
+                        ],
+                    ],
+                    'options' => ['class' => 'form-control', 'style' => 'width: 200px;']
+                ]),
+                'format' => ['date', 'php:Y-m-d'],
+            ],
         ],
     ]); ?>
 

@@ -4,26 +4,33 @@ use yii\bootstrap5\ActiveForm;
 use yii\helpers\Html;
 
 /** @var yii\web\View $this */
-/** @var src\ticket\entities\Ticket $model */
-/** @var yii\bootstrap5\ActiveForm $form */
+/** @var common\forms\TicketForm $ticketForm */
+/** @var common\forms\TicketFileForm $fileForm */
+/** @var array $houses */
+/** @var array $types */
+
 ?>
 
 <div class="ticket-form">
-
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'number')->textInput(['maxlength' => true]) ?>
+    <?php if (Yii::$app->controller->action->id === 'create'): ?>
+        <?= $form->field($ticketForm, 'house_id')->dropDownList(!empty($houses) ? $houses : [], [
+            'prompt' => 'Выберите дом',
+            'id' => 'house-id',
+        ]) ?>
 
-    <?= $form->field($model, 'status_id')->textInput() ?>
+        <?= $form->field($ticketForm, 'apartment_id')->dropDownList([], ['prompt' => 'Выберите квартиру', 'id' => 'apartment-id'])->label('Квартира (не обязательно)') ?>
 
-    <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
+        <?= $form->field($ticketForm, 'type_id')->dropDownList(!empty($types) ? $types : [], [
+            'prompt' => 'Выберите тип',
+            'id' => 'type-id',
+        ]) ?>
 
-    <?= $form->field($model, 'house_id')->textInput() ?>
+        <?= $this->render('_uploadForm', ['form' => $form, 'fileForm' => $fileForm]) ?>
+    <?php endif ?>
 
-    <?= $form->field($model, 'apartment_id')->textInput() ?>
-
-    <?= $form->field($model, 'type_id')->textInput() ?>
-
+    <?= $form->field($ticketForm, 'description')->textarea(['rows' => 6]) ?>
 
     <div class="form-group">
         <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success']) ?>
@@ -32,3 +39,23 @@ use yii\helpers\Html;
     <?php ActiveForm::end(); ?>
 
 </div>
+
+<?php
+$script = <<< JS
+$('#house-id').change(function() {
+    var houseId = $(this).val();
+    $.get('/apartment/find-apartments-by-house', { house_id: houseId }, function(data) {
+        var apartmentSelect = $('#apartment-id');
+        apartmentSelect.empty();
+        apartmentSelect.append('<option value="">Выберите квартиру</option>');
+
+        $.each(data, function(index, apartment) {
+            apartmentSelect.append('<option value="' + apartment.id + '">' + apartment.number + '</option>');
+        });
+    });
+});
+JS;
+
+$this->registerJs($script);
+?>
+

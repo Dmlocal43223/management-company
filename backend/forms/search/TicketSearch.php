@@ -21,7 +21,9 @@ class TicketSearch extends Model
     public $deleted;
     public $created_at;
     public $updated_at;
-
+    public $created_at_range;
+    public $updated_at_range;
+    public $closed_at_range;
 
     /**
      * {@inheritdoc}
@@ -30,7 +32,7 @@ class TicketSearch extends Model
     {
         return [
             [['id', 'status_id', 'house_id', 'apartment_id', 'type_id', 'created_user_id'], 'integer'],
-            [['number', 'description', 'closed_at', 'created_at', 'updated_at'], 'string'],
+            [['number', 'description', 'closed_at', 'created_at', 'updated_at', 'created_at_range', 'updated_at_range', 'closed_at_range'], 'string'],
             [['deleted'], 'boolean'],
         ];
     }

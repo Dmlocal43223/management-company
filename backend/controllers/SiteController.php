@@ -2,9 +2,13 @@
 
 namespace backend\controllers;
 
+use backend\forms\search\TicketSearch;
 use common\forms\LoginForm;
+use src\ticket\repositories\TicketRepository;
 use src\user\repositories\UserRepository;
 use Yii;
+use yii\data\ActiveDataProvider;
+use yii\data\ArrayDataProvider;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\Response;
@@ -15,9 +19,12 @@ use yii\web\Response;
 class SiteController extends Controller
 {
     private UserRepository $userRepository;
+    private TicketRepository $ticketRepository;
+
     public function __construct($id, $module, $config = [])
     {
         $this->userRepository = new UserRepository();
+        $this->ticketRepository = new TicketRepository();
 
         parent::__construct($id, $module, $config);
     }
@@ -56,7 +63,24 @@ class SiteController extends Controller
      */
     public function actionIndex(): string
     {
-        return $this->render('index');
+        $searchModel = new TicketSearch();
+        $searchModel->load($this->request->queryParams);
+
+        if (!$searchModel->validate()) {
+            $query = $this->ticketRepository->getNoResultsQuery();
+        } else {
+            $query = $this->ticketRepository->getTicketsStatisticsByHouse($searchModel);
+        }
+
+        $dataProvider = new ArrayDataProvider([
+            'allModels' => $query->asArray()->all(),
+        ]);
+
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+
     }
 
     /**

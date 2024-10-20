@@ -3,7 +3,7 @@
 use yii\helpers\Html;
 
 /** @var yii\web\View $this */
-/** @var backend\forms\TicketForm $ticketForm */
+/** @var \common\forms\TicketForm $ticketForm */
 /** @var backend\forms\NewsFileForm $fileForm */
 /** @var array $apartments */
 /** @var array $types */

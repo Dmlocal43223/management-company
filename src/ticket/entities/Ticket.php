@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace src\ticket\entities;
 
 use RuntimeException;
+use src\file\entities\File;
 use src\location\entities\Apartment;
 use src\location\entities\House;
 use src\user\entities\User;
@@ -37,6 +38,9 @@ use yii\db\Expression;
  * @property TicketStatus $status
  * @property TicketHistory[] $ticketHistories
  * @property TicketType $type
+ * @property File[] $files
+ * @property User $worker
+ * @property User $author
  */
 class Ticket extends ActiveRecord
 {
@@ -115,7 +119,7 @@ class Ticket extends ActiveRecord
         string $description,
         ?User $worker,
         int $houseId,
-        int $apartmentId,
+        ?int $apartmentId,
         int $typeId
     ): static
     {
@@ -135,9 +139,15 @@ class Ticket extends ActiveRecord
         return $ticket;
     }
 
-    public function edit(string $name): void
+    public function edit(string $description): void
     {
-        $this->name = $name;
+        $this->description = $description;
+    }
+
+    public function assign(User $user): void
+    {
+        $this->status_id = TicketStatus::STATUS_PROCESSED_ID;
+        $this->worker_id = $user->id;
     }
 
     public function close(): void
@@ -148,7 +158,7 @@ class Ticket extends ActiveRecord
 
     public function cancel(): void
     {
-        $this->status_id = TicketStatus::STATUS_CANCEL_ID;
+        $this->status_id = TicketStatus::STATUS_CANCELED_ID;
         $this->closed_at = new Expression('CURRENT_TIMESTAMP');
     }
 
@@ -235,5 +245,21 @@ class Ticket extends ActiveRecord
     public function getType(): ActiveQuery
     {
         return $this->hasOne(TicketType::class, ['id' => 'type_id']);
+    }
+
+    public function getFiles(): ActiveQuery
+    {
+        return $this->hasMany(File::class, ['id' => 'file_id'])
+            ->viaTable('ticket_file', ['ticket_id' => 'id']);
+    }
+
+    public function getWorker(): ActiveQuery
+    {
+        return $this->hasOne(User::class, ['id' => 'worker_id']);
+    }
+
+    public function getAuthor(): ActiveQuery
+    {
+        return $this->hasOne(User::class, ['id' => 'created_user_id']);
     }
 }

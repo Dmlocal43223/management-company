@@ -1,6 +1,6 @@
 <?php
 
-use frontend\forms\TicketFileForm;
+use common\forms\TicketFileForm;
 
 /** @var yii\web\View $this */
 /** @var TicketFileForm $fileForm */

@@ -30,7 +30,13 @@ class TicketStatus extends ActiveRecord
     public const STATUS_NEW_ID = 1;
     public const STATUS_PROCESSED_ID = 2;
     public const STATUS_CLOSED_ID = 3;
-    public const STATUS_CANCEL_ID = 4;
+    public const STATUS_CANCELED_ID = 4;
+    public const STATUS_DELETED_ID = 5;
+
+    public const CLOSING_STATUS_IDS = [
+        self::STATUS_CLOSED_ID,
+        self::STATUS_CANCELED_ID
+    ];
 
     /**
      * {@inheritdoc}

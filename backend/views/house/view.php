@@ -1,10 +1,13 @@
 <?php
 
+use kartik\grid\GridView;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 /** @var yii\web\View $this */
 /** @var src\location\entities\House $model */
+/** @var yii\data\ArrayDataProvider $tenantDataProvider */
+/** @var yii\data\ArrayDataProvider $workerDataProvider */
 
 $this->title = $model->number;
 $this->params['breadcrumbs'][] = ['label' => 'Объекты', 'url' => ['index']];
@@ -40,7 +43,6 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'id',
             'number',
             [
                 'attribute' => 'street_id',
@@ -54,5 +56,25 @@ $this->params['breadcrumbs'][] = $this->title;
             'updated_at',
         ],
     ]) ?>
+
+    <h2>Жители</h2>
+    <?= GridView::widget([
+        'dataProvider' => $tenantDataProvider,
+        'columns' => [
+            'username',
+            'age',
+            'gender',
+        ],
+    ]); ?>
+
+    <h2>Работники</h2>
+    <?= GridView::widget([
+        'dataProvider' => $workerDataProvider,
+        'columns' => [
+            'username',
+            'position',
+            'contact',
+        ],
+    ]); ?>
 
 </div>

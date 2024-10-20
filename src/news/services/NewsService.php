@@ -25,6 +25,7 @@ class NewsService
     private NewsRepository $newsRepository;
     private NewsFileRepository $newsFileRepository;
     private FileRepository $fileRepository;
+    private NewsFileService $newsFileService;
 
     public function __construct(
         FileService $fileService,
@@ -37,6 +38,7 @@ class NewsService
         $this->newsRepository = $newsRepository;
         $this->newsFileRepository = $newsFileRepository;
         $this->fileRepository = $fileRepository;
+        $this->newsFileService = new NewsFileService($this->newsFileRepository, $this->fileRepository);
     }
 
     public function create(NewsForm $newsForm, NewsFileForm $newsFileForm): News
@@ -115,18 +117,18 @@ class NewsService
                 $this->fileService->remove($previewFile);
             }
 
-            $this->handleFileUpload($news, $form->previewImage, FileType::PREVIEW_TYPE_ID);
+            $this->newsFileService->create($news, $form->previewImage, FileType::PREVIEW_TYPE_ID);
         }
 
         if ($form->photos) {
             foreach ($form->photos as $photo) {
-                $this->handleFileUpload($news, $photo, FileType::PHOTO_TYPE_ID);
+                $this->newsFileService->create($news, $photo, FileType::PHOTO_TYPE_ID);
             }
         }
 
         if ($form->documents) {
             foreach ($form->documents as $document) {
-                $this->handleFileUpload($news, $document, FileType::DOCUMENT_TYPE_ID);
+                $this->newsFileService->create($news, $document, FileType::DOCUMENT_TYPE_ID);
             }
         }
     }

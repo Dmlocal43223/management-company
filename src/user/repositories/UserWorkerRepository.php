@@ -27,7 +27,7 @@ class UserWorkerRepository
             ->one();
     }
 
-    public function findWorkerByHouseAndRole(House $house, Role $role): ?User
+    public function findWorkersByHouseAndRole(House $house, Role $role): array
     {
         return User::find()
             ->innerJoinWith(['userWorkers'])
@@ -36,6 +36,15 @@ class UserWorkerRepository
             ->andWhere(['user_worker.house_id' => $house->id])
             ->andWhere(['auth_assignments.item_name' => $role->name])
             ->andWhere(['user.status' => User::STATUS_ACTIVE])
-            ->one();
+            ->all();
+    }
+
+    public function findWorkersByHouse(House $house): array
+    {
+        return User::find()
+            ->innerJoinWith('userWorkers')
+            ->andWhere(['user_worker.is_active' => UserWorker::STATUS_ACTIVE])
+            ->andWhere(['user_worker.house_id' => $house->id])
+            ->all();
     }
 }

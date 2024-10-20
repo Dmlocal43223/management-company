@@ -11,12 +11,13 @@ use src\location\repositories\LocalityRepository;
 use src\location\repositories\RegionRepository;
 use src\location\repositories\StreetRepository;
 use src\location\services\HouseService;
-use src\user\entities\UserWorker;
 use src\user\repositories\UserRepository;
+use src\user\repositories\UserTenantRepository;
 use src\user\repositories\UserWorkerRepository;
 use src\user\services\UserWorkerService;
 use Yii;
 use yii\data\ActiveDataProvider;
+use yii\data\ArrayDataProvider;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -34,6 +35,7 @@ class HouseController extends Controller
     private HouseRepository $houseRepository;
     private UserRepository $userRepository;
     private UserWorkerRepository $userWorkerRepository;
+    private UserTenantRepository $userTenantRepository;
     private HouseService $houseService;
     private UserWorkerService $userWorkerService;
 
@@ -45,6 +47,7 @@ class HouseController extends Controller
         $this->houseRepository = new HouseRepository();
         $this->userRepository = new UserRepository();
         $this->userWorkerRepository = new UserWorkerRepository();
+        $this->userTenantRepository = new UserTenantRepository();
         $this->houseService = new HouseService($this->houseRepository);
         $this->userWorkerService = new UserWorkerService($this->userWorkerRepository);
 
@@ -105,8 +108,20 @@ class HouseController extends Controller
      */
     public function actionView(int $id): string
     {
+        $model = $this->findModel($id);
+
+        $tenantDataProvider = new ArrayDataProvider([
+            'allModels' => $this->userTenantRepository->findTenantsByHouse($model),
+        ]);
+
+        $workerDataProvider = new ArrayDataProvider([
+            'allModels' => $this->userWorkerRepository->findWorkersByHouse($model),
+        ]);
+
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $model,
+            'tenantDataProvider' => $tenantDataProvider,
+            'workerDataProvider' => $workerDataProvider
         ]);
     }
 

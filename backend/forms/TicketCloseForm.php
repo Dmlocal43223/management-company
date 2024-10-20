@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace backend\forms;
+
 use src\ticket\entities\TicketStatus;
 use yii\base\Model;
 
