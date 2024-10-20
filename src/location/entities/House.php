@@ -160,7 +160,8 @@ class House extends ActiveRecord
      */
     public function getUserTenants(): ActiveQuery
     {
-        return $this->hasMany(UserTenant::class, ['house_id' => 'id']);
+        return $this->hasMany(UserTenant::class, ['apartment_id' => 'id'])
+            ->viaTable('apartment', ['house_id' => 'id']);
     }
 
     /**

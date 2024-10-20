@@ -28,6 +28,7 @@ use yii\web\IdentityInterface;
  * @property integer $updated_at
  *
  * @property UserInformation $userInformation
+ * @property UserWorker $userWorkers
  */
 class User extends ActiveRecord implements IdentityInterface
 {
@@ -206,5 +207,10 @@ class User extends ActiveRecord implements IdentityInterface
     public function getUserInformation(): ActiveQuery
     {
         return $this->hasOne(UserInformation::class, ['user_id' => 'id']);
+    }
+
+    public function getUserWorkers(): ActiveQuery
+    {
+        return $this->hasMany(UserWorker::class, ['user_id' => 'id']);
     }
 }

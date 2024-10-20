@@ -21,18 +21,17 @@ class TicketStatusService
 
     public function create(TicketStatusForm $form): TicketStatus
     {
-        $fileType = TicketStatus::create($form->name);
+        $status = TicketStatus::create($form->name);
 
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            $this->ticketStatusRepository->save($fileType);
+            $this->ticketStatusRepository->save($status);
             $transaction->commit();
+            return $status;
         } catch (Exception $exception) {
             $transaction->rollBack();
             throw $exception;
         }
-
-        return $fileType;
     }
 
     public function edit(TicketStatus $ticketStatus, TicketStatusForm $form): void

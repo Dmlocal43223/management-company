@@ -68,9 +68,6 @@ class RoleService
         }
     }
 
-    /**
-     * Назначение роли пользователю
-     */
     public function assignRoleToUser(string $roleName, int $userId): void
     {
         $transaction = Yii::$app->db->beginTransaction();
@@ -83,9 +80,6 @@ class RoleService
         }
     }
 
-    /**
-     * Удаление роли у пользователя
-     */
     public function revokeRoleFromUser(string $roleName, int $userId): void
     {
         $transaction = Yii::$app->db->beginTransaction();

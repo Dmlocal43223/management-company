@@ -5,12 +5,14 @@ namespace backend\controllers;
 use backend\forms\RegionForm;
 use backend\forms\search\RegionSearch;
 use Exception;
+use src\location\entities\Locality;
 use src\location\entities\Region;
 use src\location\repositories\RegionRepository;
 use src\location\services\RegionService;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
@@ -171,6 +173,14 @@ class RegionController extends Controller
         }
 
         return $this->redirect(['view', 'id' => $model->id]);
+    }
+
+    public function actionGetLocalities()
+    {
+        $regionId = Yii::$app->request->get('region_id');
+        $cities = Locality::find()->where(['region_id' => $regionId])->all();
+
+        return $this->asJson(ArrayHelper::map($cities, 'id', 'name'));
     }
 
     /**

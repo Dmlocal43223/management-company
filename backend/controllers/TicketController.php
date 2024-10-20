@@ -2,10 +2,17 @@
 
 namespace backend\controllers;
 
+use src\location\repositories\ApartmentRepository;
+use src\role\repositories\RoleRepository;
 use src\ticket\entities\Ticket;
 use backend\forms\search\TicketSearch;
+use src\ticket\repositories\TicketHistoryRepository;
 use src\ticket\repositories\TicketRepository;
+use src\ticket\repositories\TicketStatusRepository;
+use src\ticket\repositories\TicketTypeRepository;
 use src\ticket\services\TicketService;
+use src\user\repositories\UserWorkerRepository;
+use Yii;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -22,7 +29,15 @@ class TicketController extends Controller
     public function __construct($id, $module, $config = [])
     {
         $this->ticketRepository = new TicketRepository();
-        $this->ticketService = new TicketService($this->ticketRepository);
+        $this->ticketService = new TicketService(
+            $this->ticketRepository,
+            new ApartmentRepository(),
+            new UserWorkerRepository(),
+            new TicketTypeRepository(),
+            new TicketStatusRepository(),
+            new TicketHistoryRepository(),
+            new RoleRepository(Yii::$app->authManager)
+        );
 
         parent::__construct($id, $module, $config);
     }
@@ -149,10 +164,12 @@ class TicketController extends Controller
      */
     protected function findModel(int $id): Ticket
     {
-        if (($model = Ticket::findOne(['id' => $id])) !== null) {
-            return $model;
+        $model = $this->ticketRepository->findById($id);
+
+        if (!$model) {
+            throw new NotFoundHttpException('The requested page does not exist.');
         }
 
-        throw new NotFoundHttpException('The requested page does not exist.');
+        return $model;
     }
 }

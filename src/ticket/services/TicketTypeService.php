@@ -21,18 +21,17 @@ class TicketTypeService
 
     public function create(TicketTypeForm $form): TicketType
     {
-        $fileType = TicketType::create($form->name);
+        $type = TicketType::create($form->name);
 
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            $this->ticketTypeRepository->save($fileType);
+            $this->ticketTypeRepository->save($type);
             $transaction->commit();
+            return $type;
         } catch (Exception $exception) {
             $transaction->rollBack();
             throw $exception;
         }
-
-        return $fileType;
     }
 
     public function edit(TicketType $ticketType, TicketTypeForm $form): void

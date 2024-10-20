@@ -1,12 +1,13 @@
 <?php
 
+use frontend\forms\TicketFileForm;
 use yii\bootstrap5\ActiveForm;
 use yii\helpers\Html;
 
 /** @var yii\web\View $this */
 /** @var backend\forms\TicketForm $ticketForm */
-/** @var backend\forms\NewsFileForm $fileForm */
-/** @var yii\widgets\ActiveForm $form */
+/** @var TicketFileForm $fileForm */
+/** @var yii\bootstrap5\ActiveForm $form */
 /** @var array $apartments */
 /** @var array $types */
 ?>
@@ -26,9 +27,7 @@ use yii\helpers\Html;
 
     <?= $form->field($ticketForm, 'description')->textarea(['rows' => 6]) ?>
 
-    <!--    --><?php //if (Yii::$app->controller->action->id === 'create'): ?>
-<!--        --><?php //= $this->render('_uploadForm', ['form' => $form, 'ticketForm' => $ticketForm]) ?>
-<!--    --><?php //endif ?>
+    <?= $this->render('_uploadForm', ['form' => $form, 'fileForm' => $fileForm]) ?>
 
     <div class="form-group">
         <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success']) ?>

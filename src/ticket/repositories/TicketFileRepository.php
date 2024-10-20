@@ -12,7 +12,7 @@ class TicketFileRepository
     public function save(TicketFile $ticketFile): void
     {
         if (!$ticketFile->save()) {
-            $errors = implode(', ', $ticketFile->getErrors());
+            $errors = implode(', ', $ticketFile->getErrorSummary(true));
             throw new Exception("Ошибка сохранения {$errors}.");
         }
     }

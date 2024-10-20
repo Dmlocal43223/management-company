@@ -11,21 +11,27 @@ use yii\console\Controller;
 
 class TestController extends Controller
 {
-    public function actionModel()
+    public function actionSend()
     {
-        $news = News::findOne(4);
-        $previewFile = (new FileRepository())->findFileByTypeForNews($news, FileType::PREVIEW_TYPE_ID);
-        dd($previewFile);
 
-        dd(Yii::$app->authManager);
 
-        dd(class_exists('src\role\entities\Role'));
-//        dd(class_exists('Role'));
-        $role = Role::findOne(1);
-        dd($role);
-        $role->name = 'test4';
+        try {
+            $sent = Yii::$app->mailer->compose()
+                ->setFrom('goodworld724@gmail.com')
+                ->setTo('goodworld724@gmail.com')
+                ->setSubject('Тема письма')
+                ->setTextBody('Текстовое содержание письма')
+                ->setHtmlBody('<b>HTML-содержимое письма</b>')
+                ->send();
 
-        $role->save();
+            if (!$sent) {
+                throw new \Exception('Message could not be sent.');
+            }
+        } catch (\Exception $e) {
+            dd("Email sending error: " . $e->getMessage());
+            // Дополнительно, вы можете вывести сообщение об ошибке на экран или логировать его
+        }
+        dd($sent);
     }
 
     public function actionRedis()

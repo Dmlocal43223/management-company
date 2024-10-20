@@ -46,7 +46,7 @@ class RoleController extends Controller
     {
         try {
             return $this->render('view', [
-                'model' => $this->roleRepository->findByName($name),
+                'model' => $this->roleRepository->getByName($name),
             ]);
         } catch (Exception $exception) {
             Yii::$app->session->setFlash('error', $exception->getMessage());
@@ -79,7 +79,7 @@ class RoleController extends Controller
     public function actionUpdate(string $name): Response|string
     {
         try {
-            $model = $this->roleRepository->findByName($name);
+            $model = $this->roleRepository->getByName($name);
             $form = new RoleForm();
             $form->setAttributes($model->getAttributes());
 
@@ -107,12 +107,38 @@ class RoleController extends Controller
     public function actionDelete(string $name): Response
     {
         try {
-            $model = $this->roleRepository->findByName($name);
+            $model = $this->roleRepository->getByName($name);
             $this->roleService->removeRole($model);
         } catch (Exception $exception) {
             Yii::$app->session->setFlash('error', $exception->getMessage());
         }
 
         return $this->redirect(['index']);
+    }
+
+    public function actionAssign(): Response
+    {
+        $roleName = Yii::$app->request->post('roleName');
+        $userId = Yii::$app->request->post('userId');
+
+        try {
+            $this->roleService->assignRoleToUser($roleName, $userId);
+            return $this->asJson(['success' => true]);
+        } catch (Exception $e) {
+            return $this->asJson(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function actionRevoke(): Response
+    {
+        $roleName = Yii::$app->request->post('roleName');
+        $userId = Yii::$app->request->post('userId');
+
+        try {
+            $this->roleService->revokeRoleFromUser($roleName, $userId);
+            return $this->asJson(['success' => true]);
+        } catch (Exception $e) {
+            return $this->asJson(['success' => false, 'message' => $e->getMessage()]);
+        }
     }
 }

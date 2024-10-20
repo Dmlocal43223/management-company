@@ -201,6 +201,11 @@ class StreetController extends Controller
         );
     }
 
+    public function actionFindStreetsByLocality(int $locality_id): Response
+    {
+        return $this->asJson($this->streetRepository->findByLocalityId($locality_id));
+    }
+
     /**
      * Finds the Street model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.

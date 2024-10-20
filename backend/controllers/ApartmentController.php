@@ -12,6 +12,9 @@ use src\location\repositories\LocalityRepository;
 use src\location\repositories\RegionRepository;
 use src\location\repositories\StreetRepository;
 use src\location\services\ApartmentService;
+use src\user\repositories\UserRepository;
+use src\user\repositories\UserTenantRepository;
+use src\user\services\UserTenantService;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\helpers\ArrayHelper;
@@ -30,7 +33,9 @@ class ApartmentController extends Controller
     private LocalityRepository $localityRepository;
     private RegionRepository $regionRepository;
     private HouseRepository $houseRepository;
+    private UserRepository $userRepository;
     private ApartmentService $apartmentService;
+    private UserTenantService $userTenantService;
 
     public function __construct($id, $module, $config = [])
     {
@@ -39,7 +44,9 @@ class ApartmentController extends Controller
         $this->localityRepository = new LocalityRepository();
         $this->regionRepository = new RegionRepository();
         $this->houseRepository = new HouseRepository();
+        $this->userRepository = new UserRepository();
         $this->apartmentService = new ApartmentService($this->apartmentRepository);
+        $this->userTenantService = new UserTenantService(new UserTenantRepository());
 
         parent::__construct($id, $module, $config);
     }
@@ -203,6 +210,43 @@ class ApartmentController extends Controller
         }
 
         return $this->redirect(['view', 'id' => $model->id]);
+    }
+
+    public function actionAssign(): Response
+    {
+        $userId = Yii::$app->request->post('userId');
+        $apartmentId = Yii::$app->request->post('apartmentId');
+
+        try {
+            $user = $this->userRepository->findById($userId);
+            $apartment = $this->apartmentRepository->findById($apartmentId);
+            $this->userTenantService->assignToUser($user, $apartment);
+            return $this->asJson(['success' => true]);
+        } catch (Exception $e) {
+            return $this->asJson(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function actionRevoke(): Response
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $userId = Yii::$app->request->post('userId');
+        $apartmentId = Yii::$app->request->post('apartmentId');
+
+        try {
+            $user = $this->userRepository->findById($userId);
+            $apartment = $this->apartmentRepository->findById($apartmentId);
+            $this->userTenantService->revokeFromUser($user, $apartment);
+            return $this->asJson(['success' => true]);
+        } catch (Exception $e) {
+            return $this->asJson(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function actionFindApartmentsByHouse(int $house_id): Response
+    {
+        return $this->asJson($this->apartmentRepository->findByHouseId($house_id));
     }
 
     /**

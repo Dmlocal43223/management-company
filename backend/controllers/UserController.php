@@ -2,22 +2,35 @@
 
 namespace backend\controllers;
 
+use backend\forms\UserTenantForm;
+use backend\forms\UserWorkerForm;
 use common\forms\PasswordForm;
 use backend\forms\search\UserSearch;
 use common\forms\UserForm;
 use common\forms\UserInformationForm;
 use Exception;
 use src\file\repositories\FileRepository;
+use src\location\repositories\ApartmentRepository;
+use src\location\repositories\HouseRepository;
+use src\location\repositories\LocalityRepository;
+use src\location\repositories\RegionRepository;
+use src\location\repositories\StreetRepository;
 use src\role\repositories\RoleRepository;
 use src\role\services\RoleService;
 use src\user\entities\User;
+use src\user\entities\UserTenant;
 use src\user\repositories\UserInformationRepository;
 use src\user\repositories\UserRepository;
+use src\user\repositories\UserTenantRepository;
+use src\user\repositories\UserWorkerRepository;
 use src\user\services\UserService;
+use src\user\services\UserTenantService;
+use src\user\services\UserWorkerService;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\data\ArrayDataProvider;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
@@ -29,14 +42,33 @@ class UserController extends Controller
 {
     private UserRepository $userRepository;
     private RoleRepository $roleRepository;
+    private HouseRepository $houseRepository;
+    private ApartmentRepository $apartmentRepository;
+    private StreetRepository $streetRepository;
+    private LocalityRepository $localityRepository;
+    private RegionRepository $regionRepository;
+    private UserTenantRepository $userTenantRepository;
+    private UserWorkerRepository $userWorkerRepository;
     private UserService $userService;
     private RoleService $roleService;
+    private UserTenantService $userTenantService;
+    private UserWorkerService $userWorkerService;
+
     public function __construct($id, $module, $config = [])
     {
+        $this->streetRepository = new StreetRepository();
+        $this->localityRepository = new LocalityRepository();
+        $this->regionRepository = new RegionRepository();
         $this->userRepository = new UserRepository();
         $this->roleRepository = new RoleRepository(Yii::$app->authManager);
+        $this->houseRepository = new HouseRepository();
+        $this->apartmentRepository = new ApartmentRepository();
+        $this->userTenantRepository = new UserTenantRepository();
+        $this->userWorkerRepository = new UserWorkerRepository();
         $this->roleService = new RoleService($this->roleRepository);
         $this->userService = new UserService($this->userRepository, new UserInformationRepository(), new FileRepository());
+        $this->userTenantService = new UserTenantService($this->userTenantRepository);
+        $this->userWorkerService = new UserWorkerService($this->userWorkerRepository);
 
         parent::__construct($id, $module, $config);
     }
@@ -192,7 +224,7 @@ class UserController extends Controller
     {
         $model = $this->findModel($user_id);
         $roles = $this->roleRepository->getAll();
-        $assignedRoles = $this->roleRepository->getUserRoles($model->id);
+        $assignedRoles = $this->roleRepository->getUserRoles($model);
 
         $dataProvider = new ArrayDataProvider([
             'allModels' => $roles,
@@ -206,47 +238,77 @@ class UserController extends Controller
         ]);
     }
 
-    public function actionAssignRole(): Response
-    {
-        $roleName = Yii::$app->request->post('roleName');
-        $userId = Yii::$app->request->post('userId');
-
-        try {
-            $this->roleService->assignRoleToUser($roleName, $userId);
-            return $this->asJson(['success' => true]);
-        } catch (Exception $e) {
-            return $this->asJson(['success' => false, 'message' => $e->getMessage()]);
-        }
-    }
-
-    public function actionRevokeRole(): Response
-    {
-        $roleName = Yii::$app->request->post('roleName');
-        $userId = Yii::$app->request->post('userId');
-
-        try {
-            $this->roleService->revokeRoleFromUser($roleName, $userId);
-            return $this->asJson(['success' => true]);
-        } catch (Exception $e) {
-            return $this->asJson(['success' => false, 'message' => $e->getMessage()]);
-        }
-    }
-
-    public function actionHouses(int $user_id): string
+    public function actionApartments(int $user_id): Response|string
     {
         $model = $this->findModel($user_id);
-        $houses = $this->roleRepository->getAll();
-        $assignedHouses = $this->roleRepository->getUserRoles($model->id);
+        $tenantApartments = $this->apartmentRepository->findTenantApartments($model);
 
         $dataProvider = new ArrayDataProvider([
-            'allModels' => $houses,
+            'allModels' => $tenantApartments,
             'pagination' => false,
         ]);
 
+        $form = new UserTenantForm();
+
+        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
+            try {
+                $apartment = $this->apartmentRepository->findById($form->apartment_id);
+                $userTenant = $this->userTenantRepository->findByUserAndApartment($model, $apartment);
+
+                if ($userTenant?->is_active == UserTenant::STATUS_ACTIVE) {
+                    Yii::$app->session->setFlash('error', 'Эта квартира уже назначена на пользователя.');
+                    return $this->refresh();
+                }
+
+                $this->userTenantService->assignToUser($model, $apartment);
+                Yii::$app->session->setFlash('success', 'Квартира успешна добавлена.');
+                return $this->redirect(['apartments', 'user_id' => $user_id]);
+            } catch (Exception $exception) {
+                Yii::$app->session->setFlash('error', $exception->getMessage());
+            }
+        }
+
+        return $this->render('apartments', [
+            'model' => $model,
+            'userTenantForm' => $form,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    public function actionHouses(int $user_id): Response|string
+    {
+        $model = $this->findModel($user_id);
+        $workerHouses = $this->houseRepository->findWorkerHouses($model);
+
+        $dataProvider = new ArrayDataProvider([
+            'allModels' => $workerHouses,
+            'pagination' => false,
+        ]);
+
+        $form = new UserWorkerForm();
+
+        if ($form->load(Yii::$app->request->post()) && $form->validate()) {
+            try {
+                $house = $this->houseRepository->findById($form->house_id);
+                $userTenant = $this->userWorkerRepository->findByUserAndHouse($model, $house);
+
+                if ($userTenant?->is_active == UserTenant::STATUS_ACTIVE) {
+                    Yii::$app->session->setFlash('error', 'Этот дом уже назначен на пользователя.');
+                    return $this->refresh();
+                }
+
+                $this->userWorkerService->assignToUser($model, $house);
+                Yii::$app->session->setFlash('success', 'Дом успешно добавлен.');
+                return $this->redirect(['houses', 'user_id' => $user_id]);
+            } catch (Exception $exception) {
+                Yii::$app->session->setFlash('error', $exception->getMessage());
+            }
+        }
+
         return $this->render('houses', [
             'model' => $model,
+            'userWorkerForm' => $form,
             'dataProvider' => $dataProvider,
-            'assignedHouses' => array_keys($assignedHouses)
         ]);
     }
 

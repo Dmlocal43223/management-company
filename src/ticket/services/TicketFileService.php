@@ -27,7 +27,7 @@ class TicketFileService
         $this->fileService = new FileService($this->fileRepository);
     }
 
-    public function create(Ticket $ticket, UploadedFile $file, int $fileTypeId): void
+    public function create(Ticket $ticket, UploadedFile $file, int $fileTypeId): TicketFile
     {
         $hash = $this->fileService->generateHash($file);
 
@@ -41,6 +41,7 @@ class TicketFileService
             $ticketFile = TicketFile::create($ticket, $file);
             $this->ticketFileRepository->save($ticketFile);
             $transaction->commit();
+            return $ticketFile;
         } catch (Exception $exception) {
             $transaction->rollBack();
             throw $exception;

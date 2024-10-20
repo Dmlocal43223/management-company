@@ -8,6 +8,15 @@ use yii\base\Model;
 
 class Role extends Model
 {
+    public const ADMIN = 'administrator';
+    public const MANAGER = 'manager';
+    public const PLUMBER = 'plumber';
+    public const CARPENTER = 'carpenter';
+    public const ELECTRICIAN = 'electrician';
+    public const CLEANER = 'cleaner';
+    public const TENANT = 'tenant';
+
+
     public string $name;
     public string $description;
 

@@ -21,8 +21,8 @@ class FileRepository
     public function save(File $file): void
     {
         if (!$file->save()) {
-            $errors = get_class($file) . '. ' . implode(', ', $file->getErrors());
-            throw new Exception("Ошибка сохранения {$errors}.");
+            $errors = get_class($file) . '. ' . implode(' ', $file->getErrorSummary(true));
+            throw new Exception("Ошибка сохранения {$errors}");
         }
     }
 

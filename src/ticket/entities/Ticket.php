@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace src\ticket\entities;
 
-use http\Exception\RuntimeException;
+use RuntimeException;
 use src\location\entities\Apartment;
 use src\location\entities\House;
 use src\user\entities\User;
@@ -113,6 +113,7 @@ class Ticket extends ActiveRecord
 
     public static function create(
         string $description,
+        ?User $worker,
         int $houseId,
         int $apartmentId,
         int $typeId
@@ -121,6 +122,7 @@ class Ticket extends ActiveRecord
         $ticket = new static();
         $ticket->status_id = TicketStatus::STATUS_NEW_ID;
         $ticket->description = $description;
+        $ticket->worker_id = $worker?->id;
         $ticket->house_id = $houseId;
         $ticket->apartment_id = $apartmentId;
         $ticket->type_id = $typeId;
@@ -136,6 +138,18 @@ class Ticket extends ActiveRecord
     public function edit(string $name): void
     {
         $this->name = $name;
+    }
+
+    public function close(): void
+    {
+        $this->status_id = TicketStatus::STATUS_CLOSED_ID;
+        $this->closed_at = new Expression('CURRENT_TIMESTAMP');
+    }
+
+    public function cancel(): void
+    {
+        $this->status_id = TicketStatus::STATUS_CANCEL_ID;
+        $this->closed_at = new Expression('CURRENT_TIMESTAMP');
     }
 
     public function remove(): void
@@ -161,9 +175,12 @@ class Ticket extends ActiveRecord
     public function generateNumber(): void
     {
         $prefix = match ($this->type_id) {
-            TicketType::TYPE_APPEAL_ID => 'ap',
-            TicketType::TYPE_COMPLAINT_ID  => 'comp',
-            TicketType::TYPE_EMPLOYEE_CALL_ID  => 'ec',
+            TicketType::TYPE_APPEAL_ID => 'appeal',
+            TicketType::TYPE_COMPLAINT_ID  => 'complaint',
+            TicketType::TYPE_PLUMBER_CALL_ID,
+            TicketType::TYPE_CARPENTER_CALL_ID,
+            TicketType::TYPE_ELECTRICIAN_CALL_ID,
+            TicketType::TYPE_CLEANER_CALL_ID  => 'call',
             default => throw new RuntimeException("Неизвестный тип заявки {$this->type_id}"),
         };
 

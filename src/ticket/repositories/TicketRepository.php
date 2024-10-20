@@ -6,6 +6,8 @@ namespace src\ticket\repositories;
 
 use backend\forms\search\TicketSearch;
 use src\ticket\entities\Ticket;
+use src\user\entities\User;
+use Yii;
 use yii\db\ActiveQuery;
 use yii\db\Exception;
 
@@ -19,8 +21,10 @@ class TicketRepository
     public function save(Ticket $ticket): void
     {
         if (!$ticket->save()) {
-            throw new Exception('Ошибка сохранения.');
+            $errors =  implode(' ', $ticket->getErrorSummary(true));
+            throw new Exception("Ошибка сохранения. {$errors}");
         }
+
     }
 
     public function getFilteredQuery(TicketSearch $searchModel): ActiveQuery
@@ -39,6 +43,15 @@ class TicketRepository
         ])
             ->andFilterWhere(['ilike', 'name', $searchModel->number])
             ->andFilterWhere(['ilike', 'description', $searchModel->description]);
+    }
+
+    public function getFilteredQueryByUser(TicketSearch $searchModel): ActiveQuery
+    {
+        return Ticket::find()
+            ->andWhere(['created_user_id' => Yii::$app->user->id])
+            ->andWhere(['deleted' => Ticket::STATUS_ACTIVE])
+            ->andFilterWhere(['number' => $searchModel->number])
+            ->andFilterWhere(['status_id' => $searchModel->status_id]);
     }
 
     public function getNoResultsQuery(): ActiveQuery

@@ -28,7 +28,10 @@ class TicketType extends ActiveRecord
 
     public const TYPE_APPEAL_ID = 1;
     public const TYPE_COMPLAINT_ID = 2;
-    public const TYPE_EMPLOYEE_CALL_ID = 3;
+    public const TYPE_PLUMBER_CALL_ID = 3;
+    public const TYPE_CARPENTER_CALL_ID = 4;
+    public const TYPE_ELECTRICIAN_CALL_ID = 5;
+    public const TYPE_CLEANER_CALL_ID = 6;
 
     /**
      * {@inheritdoc}

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace src\user\entities;
 
+use src\location\entities\Apartment;
 use src\location\entities\House;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
@@ -26,6 +27,9 @@ use yii\db\Expression;
  */
 class UserWorker extends ActiveRecord
 {
+    public const STATUS_ACTIVE = 1;
+    public const STATUS_NOT_ACTIVE = 0;
+
     /**
      * {@inheritdoc}
      */
@@ -82,6 +86,27 @@ class UserWorker extends ActiveRecord
         ];
     }
 
+    public static function create(User $user, House $house): static
+    {
+        $userTenant = new static();
+        $userTenant->user_id = $user->id;
+        $userTenant->house_id = $house->id;
+        $userTenant->activate();
+
+        $userTenant->created_at = new Expression('CURRENT_TIMESTAMP');
+
+        return $userTenant;
+    }
+
+    public function deactivate(): void
+    {
+        $this->is_active = self::STATUS_NOT_ACTIVE;
+    }
+
+    public function activate(): void
+    {
+        $this->is_active = self::STATUS_ACTIVE;
+    }
     /**
      * Gets query for [[House]].
      *

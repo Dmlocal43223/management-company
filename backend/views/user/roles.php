@@ -60,7 +60,7 @@ $('.role-checkbox').on('change', function() {
 
     if (confirm(confirmMessage)) {
         $.ajax({
-            url: action === 'assign' ? '/user/assign-role' : '/user/revoke-role',
+            url: action === 'assign' ? '/role/assign' : '/role/revoke',
             type: 'POST',
             data: {
                 roleName: roleName,

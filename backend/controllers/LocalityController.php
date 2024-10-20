@@ -195,6 +195,12 @@ class LocalityController extends Controller
         );
     }
 
+    public function actionFindLocalitiesByRegion($region_id): Response
+    {
+        return $this->asJson($this->localityRepository->findByRegionId($region_id));
+    }
+
+
     /**
      * Finds the Locality model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.

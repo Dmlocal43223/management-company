@@ -26,8 +26,8 @@ use yii\db\Expression;
  */
 class UserTenant extends ActiveRecord
 {
-    public const STATUS_ACTIVE = 0;
-    public const STATUS_NOT_ACTIVE = 1;
+    public const STATUS_ACTIVE = 1;
+    public const STATUS_NOT_ACTIVE = 0;
 
     /**
      * {@inheritdoc}
@@ -83,6 +83,28 @@ class UserTenant extends ActiveRecord
             'created_at' => 'Дата создания',
             'updated_at' => 'Дата обновления',
         ];
+    }
+
+    public static function create(User $user, Apartment $apartment): static
+    {
+        $userTenant = new static();
+        $userTenant->user_id = $user->id;
+        $userTenant->apartment_id = $apartment->id;
+        $userTenant->activate();
+
+        $userTenant->created_at = new Expression('CURRENT_TIMESTAMP');
+
+        return $userTenant;
+    }
+
+    public function deactivate(): void
+    {
+        $this->is_active = self::STATUS_NOT_ACTIVE;
+    }
+
+    public function activate(): void
+    {
+        $this->is_active = self::STATUS_ACTIVE;
     }
 
     /**

@@ -39,8 +39,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <?= Html::a('Изменить пароль', ['change-password', 'id' => $model->id], ['class' => 'btn btn-secondary']) ?>
         <?= Html::a('Роли', ['roles', 'user_id' => $model->id], ['class' => 'btn btn-success']) ?>
-        <?= Html::a('Объекты(Жилое)', ['houses', 'id' => $model->id], ['class' => 'btn btn-warning']) ?>
-        <?= Html::a('Объекты(Работа)', ['houses', 'id' => $model->id], ['class' => 'btn btn-warning']) ?>
+        <?= Html::a('Квартиры(Жилое)', ['apartments', 'user_id' => $model->id], ['class' => 'btn btn-warning']) ?>
+        <?= Html::a('Объекты(Работа)', ['houses', 'user_id' => $model->id], ['class' => 'btn btn-warning']) ?>
     </p>
 
     <div class="user-avatar" style="margin-bottom: 15px;">

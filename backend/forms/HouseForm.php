@@ -39,7 +39,7 @@ class HouseForm extends Model
     public function attributeLabels(): array
     {
         return [
-            'number' => 'Название',
+            'number' => 'Номер',
             'region_id' => 'Регион',
             'locality_id' => 'Населенный пункт',
             'street_id' => 'Улица',

@@ -7,6 +7,7 @@ namespace src\location\repositories;
 use backend\forms\search\ApartmentSearch;
 use src\location\entities\Apartment;
 use src\location\entities\House;
+use src\user\entities\User;
 use src\user\entities\UserTenant;
 use Yii;
 use yii\db\ActiveQuery;
@@ -47,6 +48,14 @@ class ApartmentRepository
         return Apartment::find()->all();
     }
 
+    public function findAllActiveWithRelations(): array
+    {
+        return Apartment::find()
+            ->innerJoinWith('house.street.locality.region')
+            ->andWhere(['apartment.deleted' => Apartment::STATUS_ACTIVE])
+            ->all();
+    }
+
     public function findByHouse(House $house, int $isDeleted = null): array
     {
         return Apartment::find()
@@ -56,16 +65,54 @@ class ApartmentRepository
             ->all();
     }
 
-    public function findActiveApartmentNumbersByUser(): array
+    public function findActiveApartmentByUser(): array
     {
         return Apartment::find()
-            ->innerJoinWith('userTenants')
-            ->select(['apartment.number', 'id'])
+            ->innerJoinWith(['userTenants', 'house.street.locality.region'])
             ->andWhere(['apartment.deleted' => Apartment::STATUS_ACTIVE])
             ->andWhere(['user_tenant.user_id' => Yii::$app->user->id])
-            ->andWhere(['user_tenant.is_active' => UserTenant::STATUS_NOT_ACTIVE])
+            ->andWhere(['user_tenant.is_active' => UserTenant::STATUS_ACTIVE])
             ->orderBy('apartment.number')
-            ->asArray()
             ->all();
+    }
+
+    public function findTenantApartments(User $user): array
+    {
+        return Apartment::find()
+            ->innerJoinWith(['userTenants', 'house.street.locality.region'])
+            ->andWhere(['user_tenant.user_id' => $user->id])
+            ->andWhere(['user_tenant.is_active' => UserTenant::STATUS_ACTIVE])
+            ->andWhere(['apartment.deleted' => House::STATUS_ACTIVE])
+            ->all();
+    }
+
+    public function findByHouseId(int $houseId): array
+    {
+        return Apartment::find()
+            ->andWhere(['house_id' => $houseId])
+            ->andWhere(['deleted' => Apartment::STATUS_ACTIVE])
+            ->all();
+    }
+
+    public function getFormattedApartmentAddressesByUser(): array
+    {
+        $apartments = $this->findActiveApartmentByUser();
+
+        $formattedApartmentAddresses = [];
+
+        /** @var Apartment $apartment */
+        foreach ($apartments as $apartment) {
+            $addressParts = [
+                $apartment->house->street->locality->region->name,
+                $apartment->house->street->locality->name,
+                $apartment->house->street->name,
+                'д. ' . $apartment->house->number,
+                'кв. ' . $apartment->number,
+            ];
+
+            $formattedApartmentAddresses[$apartment->id] = implode(', ', array_filter($addressParts));
+        }
+
+        return $formattedApartmentAddresses;
     }
 }

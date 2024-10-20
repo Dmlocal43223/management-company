@@ -11,6 +11,10 @@ use src\location\repositories\LocalityRepository;
 use src\location\repositories\RegionRepository;
 use src\location\repositories\StreetRepository;
 use src\location\services\HouseService;
+use src\user\entities\UserWorker;
+use src\user\repositories\UserRepository;
+use src\user\repositories\UserWorkerRepository;
+use src\user\services\UserWorkerService;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\helpers\ArrayHelper;
@@ -28,7 +32,10 @@ class HouseController extends Controller
     private LocalityRepository $localityRepository;
     private RegionRepository $regionRepository;
     private HouseRepository $houseRepository;
+    private UserRepository $userRepository;
+    private UserWorkerRepository $userWorkerRepository;
     private HouseService $houseService;
+    private UserWorkerService $userWorkerService;
 
     public function __construct($id, $module, $config = [])
     {
@@ -36,7 +43,10 @@ class HouseController extends Controller
         $this->localityRepository = new LocalityRepository();
         $this->regionRepository = new RegionRepository();
         $this->houseRepository = new HouseRepository();
+        $this->userRepository = new UserRepository();
+        $this->userWorkerRepository = new UserWorkerRepository();
         $this->houseService = new HouseService($this->houseRepository);
+        $this->userWorkerService = new UserWorkerService($this->userWorkerRepository);
 
         parent::__construct($id, $module, $config);
     }
@@ -209,6 +219,43 @@ class HouseController extends Controller
             'id',
             'number'
         );
+    }
+
+    public function actionFindHousesByStreet(int $street_id): Response
+    {
+        return $this->asJson($this->houseRepository->findByStreetId($street_id));
+    }
+
+    public function actionAssign(): Response
+    {
+        $userId = Yii::$app->request->post('userId');
+        $houseId = Yii::$app->request->post('houseId');
+
+        try {
+            $user = $this->userRepository->findById($userId);
+            $house = $this->houseRepository->findById($houseId);
+            $this->userWorkerService->assignToUser($user, $house);
+            return $this->asJson(['success' => true]);
+        } catch (Exception $e) {
+            return $this->asJson(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function actionRevoke(): Response
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $userId = Yii::$app->request->post('userId');
+        $houseId = Yii::$app->request->post('houseId');
+
+        try {
+            $user = $this->userRepository->findById($userId);
+            $house = $this->houseRepository->findById($houseId);
+            $this->userWorkerService->revokeFromUser($user, $house);
+            return $this->asJson(['success' => true]);
+        } catch (Exception $e) {
+            return $this->asJson(['success' => false, 'message' => $e->getMessage()]);
+        }
     }
 
     /**

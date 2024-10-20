@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace src\ticket\entities;
 
 use src\user\entities\User;
+use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -76,13 +77,29 @@ class TicketHistory extends ActiveRecord
     {
         return [
             'id' => 'ID',
-            'ticket_id' => 'Ticket ID',
-            'status_id' => 'Status ID',
-            'reason' => 'Reason',
-            'created_user_id' => 'Created User ID',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
+            'ticket_id' => 'Заявка',
+            'status_id' => 'Статус',
+            'reason' => 'Причина',
+            'created_user_id' => 'Пользователь',
+            'created_at' => 'Дата создания',
+            'updated_at' => 'Дата обновления',
         ];
+    }
+
+    public static function create(
+        Ticket $ticket,
+        TicketStatus $status,
+        string $reason
+    ): static
+    {
+        $ticketHistory = new static();
+        $ticketHistory->ticket_id = $ticket->id;
+        $ticketHistory->status_id = $status->id;
+        $ticketHistory->reason = $reason;
+        $ticketHistory->created_user_id = Yii::$app->user->id;
+        $ticketHistory->created_at = new Expression('CURRENT_TIMESTAMP');
+
+        return $ticketHistory;
     }
 
     /**

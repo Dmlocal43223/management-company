@@ -7,6 +7,8 @@ namespace src\location\repositories;
 use backend\forms\search\HouseSearch;
 use Exception;
 use src\location\entities\House;
+use src\user\entities\User;
+use src\user\entities\UserWorker;
 use yii\db\ActiveQuery;
 
 class HouseRepository
@@ -60,5 +62,23 @@ class HouseRepository
     public function findAll(): array
     {
         return House::find()->all();
+    }
+
+    public function findWorkerHouses(User $user): array
+    {
+        return House::find()
+            ->innerJoinWith(['userWorkers', 'street.locality.region'])
+            ->andWhere(['user_worker.user_id' => $user->id])
+            ->andWhere(['user_worker.is_active' => UserWorker::STATUS_ACTIVE])
+            ->andWhere(['house.deleted' => House::STATUS_ACTIVE])
+            ->all();
+    }
+
+    public function findAllActiveWithRelations(): array
+    {
+        return House::find()
+            ->innerJoinWith('street.locality.region')
+            ->andWhere(['house.deleted' => House::STATUS_ACTIVE])
+            ->all();
     }
 }
