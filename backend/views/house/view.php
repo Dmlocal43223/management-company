@@ -61,9 +61,13 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= GridView::widget([
         'dataProvider' => $tenantDataProvider,
         'columns' => [
-            'username',
-            'age',
-            'gender',
+            [
+                'label' => 'Имя',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return Html::a($model->getFullName(), ['user/view', 'id' => $model->id]);
+                },
+            ],
         ],
     ]); ?>
 
@@ -71,9 +75,13 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= GridView::widget([
         'dataProvider' => $workerDataProvider,
         'columns' => [
-            'username',
-            'position',
-            'contact',
+            [
+                'label' => 'Имя',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return Html::a($model->getFullName(), ['user/view', 'id' => $model->id]);
+                },
+            ],
         ],
     ]); ?>
 

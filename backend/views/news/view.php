@@ -50,7 +50,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'label' => 'Автор',
                 'value' => function ($model) {
-                    return $model->author->username ?? 'Неизвестный автор';
+                    return $model?->author?->getFullName() ?? 'Неизвестный автор';
                 },
             ],
             'deleted:boolean',

@@ -6,6 +6,7 @@ namespace src\user\repositories;
 
 use backend\forms\search\UserSearch;
 use src\user\entities\User;
+use Yii;
 use yii\db\ActiveQuery;
 use yii\db\Exception;
 
@@ -26,10 +27,18 @@ class UserRepository
 
     public function getUserWithDetails(int $userId): User
     {
-        $user = User::find()
-            ->innerJoinWith(['userInformation'])
-            ->andWhere(['user.id' => $userId])
-            ->one();
+        $cache = Yii::$app->cache;
+        $key = 'user_' . $userId;
+        $duration = 60 * 5;
+
+
+        $user = $cache->getOrSet($key, function () use ($userId) {
+            return User::find()
+                ->innerJoinWith(['userInformation'])
+                ->andWhere(['user.id' => $userId])
+                ->one();
+        }, $duration);
+
 
         return $user ?? throw new Exception("Пользователь {$userId} не найден");
     }

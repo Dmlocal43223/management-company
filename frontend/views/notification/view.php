@@ -7,7 +7,7 @@ use yii\helpers\Html;
 
 
 $this->title = $model->title;
-$this->params['breadcrumbs'][] = ['label' => 'Заявки', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Оповещения', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>

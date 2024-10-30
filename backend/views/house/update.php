@@ -9,9 +9,9 @@ use yii\helpers\Html;
 /** @var array $localities */
 /** @var array $streets */
 
-$this->title = 'Обновить объект: ' . $model->id;
+$this->title = 'Обновить объект: ' . $model->number;
 $this->params['breadcrumbs'][] = ['label' => 'Объекты', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
+$this->params['breadcrumbs'][] = ['label' => $model->number, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Обновить';
 ?>
 <div class="house-update">

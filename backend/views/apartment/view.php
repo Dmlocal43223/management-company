@@ -47,7 +47,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => function($model) {
                     return $model?->house?->number;
                 },
-                'label' => 'Улица',
+                'label' => 'Объект',
             ],
             'deleted:boolean',
             'created_at',

@@ -1,6 +1,5 @@
 <?php
 
-use kartik\date\DatePicker;
 use kartik\daterange\DateRangePicker;
 use yii\helpers\Html;
 use yii\grid\GridView;
@@ -32,11 +31,40 @@ $this->params['breadcrumbs'][] = $this->title;
                 },
             ],
             'number',
-            'status_id',
-//            'description:ntext',
-            'house_id',
-            'apartment_id',
-            'type_id',
+            [
+                'attribute' => 'status_id',
+                'label' => 'Статус',
+                'value' => function ($model) {
+                    return $model->status->name;
+                },
+            ],
+            [
+                'label' => 'Работник',
+                'value' => function ($model) {
+                    return $model?->worker?->getFullName();
+                },
+            ],
+            [
+                'attribute' => 'house_id',
+                'label' => 'Объект',
+                'value' => function ($model) {
+                    return $model->house->getAddress();
+                },
+            ],
+            [
+                'attribute' => 'apartment_id',
+                'label' => 'Квартира',
+                'value' => function ($model) {
+                    return $model?->apartment?->number;
+                },
+            ],
+            [
+                'attribute' => 'type_id',
+                'label' => 'Тип',
+                'value' => function ($model) {
+                    return $model->type->name;
+                },
+            ],
             'deleted:boolean',
             [
                 'attribute' => 'closed_at',

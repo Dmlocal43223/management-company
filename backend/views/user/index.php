@@ -1,5 +1,6 @@
 <?php
 
+use src\user\entities\User;
 use yii\grid\GridView;
 use yii\helpers\Html;
 
@@ -14,10 +15,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>
-        <?= Html::a('Создать пользователя', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
-
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
@@ -31,7 +28,17 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             'username',
             'email:email',
-            'status'
+            [
+                'attribute' => 'status',
+                'format' => 'text',
+                'value' => function ($model) {
+                    return $model->status == User::STATUS_ACTIVE ? 'Да' : 'Нет';
+                },
+                'filter' => [
+                    User::STATUS_ACTIVE => 'Да',
+                    User::STATUS_INACTIVE => 'Нет',
+                ],
+            ]
         ],
     ]); ?>
 

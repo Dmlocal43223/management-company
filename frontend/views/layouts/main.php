@@ -23,6 +23,14 @@ AppAsset::register($this);
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <?php $this->registerCsrfMetaTags() ?>
         <title><?= Html::encode($this->title) ?></title>
+
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-EHESJNH6ZM"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+        </script>
+
         <?php $this->head() ?>
     </head>
     <body class="d-flex flex-column h-100">
@@ -41,8 +49,11 @@ AppAsset::register($this);
             ['label' => 'Объекты', 'url' => ['/house/index']],
             ['label' => 'Новости', 'url' => ['/news/index']],
             ['label' => 'Информация', 'url' => ['/site/about']],
-            ['label' => 'Отправить обращение', 'url' => ['/ticket/create']],
         ];
+
+        if (Yii::$app->user->can('Житель')) {
+            $menuItems[] = ['label' => 'Отправить обращение', 'url' => ['/ticket/create']];
+        }
 
         echo Nav::widget([
             'options' => ['class' => 'navbar-nav me-auto mb-2 mb-md-0'],

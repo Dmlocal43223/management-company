@@ -61,11 +61,41 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             'number',
-            'status_id',
+            [
+                'attribute' => 'status_id',
+                'label' => 'Статус',
+                'value' => function ($model) {
+                    return $model->status->name;
+                },
+            ],
+            [
+                'label' => 'Работник',
+                'value' => function ($model) {
+                    return $model?->worker?->getFullName();
+                },
+            ],
             'description:ntext',
-            'house_id',
-            'apartment_id',
-            'type_id',
+            [
+                'attribute' => 'house_id',
+                'label' => 'Объект',
+                'value' => function ($model) {
+                    return $model->house->getAddress();
+                },
+            ],
+            [
+                'attribute' => 'apartment_id',
+                'label' => 'Квартира',
+                'value' => function ($model) {
+                    return $model?->apartment?->number;
+                },
+            ],
+            [
+                'attribute' => 'type_id',
+                'label' => 'Тип',
+                'value' => function ($model) {
+                    return $model->type->name;
+                },
+            ],
             'closed_at',
             'created_at',
         ],
@@ -76,20 +106,20 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $historyDataProvider,
         'columns' => [
             [
-                'attribute' => 'created_at',
-                'label' => 'Дата',
-                'format' => ['date', 'php:d/m/Y H:i:s'],
-            ],
-            [
                 'attribute' => 'status_id',
                 'label' => 'Статус',
                 'value' => function ($model) {
-                    return $model->status_id;
+                    return $model->status->name;
                 },
             ],
             [
-                'attribute' => 'comment',
+                'attribute' => 'reason',
                 'label' => 'Комментарий',
+            ],
+            [
+                'attribute' => 'created_at',
+                'label' => 'Дата',
+                'format' => ['date', 'php:Y-m-d H:i:s'],
             ],
         ],
     ]); ?>
@@ -103,6 +133,8 @@ $this->params['breadcrumbs'][] = $this->title;
             'data-bs-target' => '#uploadModal'
         ]) ?>
     </div>
+
+    <br>
 
     <?= GridView::widget([
         'dataProvider' => $fileDataProvider,

@@ -147,6 +147,7 @@ class UserController extends Controller
 
         if ($userForm->load(Yii::$app->request->post()) && $userInformationForm->load(Yii::$app->request->post())) {
             if ($userForm->validate() && $userInformationForm->validate()) {
+                $userInformationForm->setUploadedFile();
                 try {
                     $this->userService->edit($model, $userForm, $userInformationForm);
                     return $this->redirect(['view', 'id' => $model->id]);

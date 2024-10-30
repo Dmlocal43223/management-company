@@ -59,6 +59,18 @@ class UserService
             );
 
             $this->userInformationRepository->save($userInformation);
+
+            $cache = Yii::$app->cache;
+            $key = 'user_' . $user->id;
+            $duration = 60 * 5;
+
+            $cache->getOrSet($key, function () use ($user) {
+                return User::find()
+                    ->innerJoinWith(['userInformation'])
+                    ->andWhere(['user.id' => $user->id])
+                    ->one();
+            }, $duration);
+
             $transaction->commit();
         } catch (Exception $exception) {
             $transaction->rollBack();
@@ -90,6 +102,18 @@ class UserService
 
             $this->userRepository->save($user);
             $this->userInformationRepository->save($userInformation);
+
+            $cache = Yii::$app->cache;
+            $key = 'user_' . $user->id;
+            $duration = 60 * 5;
+
+            $cache->getOrSet($key, function () use ($user) {
+                return User::find()
+                    ->innerJoinWith(['userInformation'])
+                    ->andWhere(['user.id' => $user->id])
+                    ->one();
+            }, $duration);
+
             $transaction->commit();
         } catch (Exception $exception) {
             $transaction->rollBack();

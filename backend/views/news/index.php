@@ -39,7 +39,12 @@ $this->params['breadcrumbs'][] = $this->title;
                     return StringHelper::truncate(Html::encode($model->content), 250, '...');
                 },
             ],
-            'author_id',
+            [
+                'label' => 'Автор',
+                'value' => function ($model) {
+                    return $model?->author?->getFullName() ?? 'Неизвестный автор';
+                },
+            ],
             'deleted:boolean',
             'created_at',
             'updated_at',

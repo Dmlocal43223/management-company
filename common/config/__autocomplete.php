@@ -24,6 +24,7 @@ class Yii {
  * 
  */
 class __Application {
+    public \yii\elasticsearch\Connection $elasticsearch;
 }
 
 /**
