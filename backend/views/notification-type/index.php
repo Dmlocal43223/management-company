@@ -34,8 +34,6 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             'name',
             'deleted:boolean',
-            'created_at',
-            'updated_at',
         ],
     ]); ?>
 

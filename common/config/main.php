@@ -1,4 +1,7 @@
 <?php
+
+use common\components\RoleManager;
+
 return [
     'name' => 'Управляющая компания',
     'aliases' => [
@@ -20,7 +23,7 @@ return [
         'cache' => [
             'class' => 'yii\redis\Cache',
             'redis' => [
-                'hostname' => 'management-company-redis-1',
+                'hostname' => 'management-company_redis_1',
                 'port' => 6379,
                 'database' => 0,
             ],
@@ -33,7 +36,7 @@ return [
         ],
         'redis' => [
             'class' => 'yii\redis\Connection',
-            'hostname' => 'management-company-redis-1',
+            'hostname' => 'management-company_redis_1',
             'port' => 6379,
             'database' => 0,
         ],
@@ -44,6 +47,9 @@ return [
                 'dateFormat' => 'php:d.m.Y',
                 'datetimeFormat' => 'php:d.m.Y H:i',
                 'timeFormat' => 'php:H:i',
+        ],
+        'roleManager' => [
+            'class' => RoleManager::class,
         ],
     ],
     'modules' => [

@@ -4,12 +4,14 @@ namespace backend\controllers;
 
 use backend\forms\TicketTypeForm;
 use Exception;
+use src\role\entities\Role;
 use src\ticket\entities\TicketType;
 use backend\forms\search\TicketTypeSearch;
 use src\ticket\repositories\TicketTypeRepository;
 use src\ticket\services\TicketTypeService;
 use Yii;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -38,6 +40,32 @@ class TicketTypeController extends Controller
         return array_merge(
             parent::behaviors(),
             [
+                'access' => [
+                    'class' => AccessControl::class,
+                    'rules' => [
+                        [
+                            'actions' => [
+                                'index',
+                                'view',
+                            ],
+                            'allow' => true,
+                            'roles' => Role::HEAD_ROLES,
+                        ],
+                        [
+                            'actions' => [
+                                'create',
+                                'update',
+                                'delete',
+                                'restore',
+                            ],
+                            'allow' => true,
+                            'roles' => [Role::ADMIN],
+                        ],
+                        [
+                            'allow' => false,
+                        ],
+                    ],
+                ],
                 'verbs' => [
                     'class' => VerbFilter::class,
                     'actions' => [

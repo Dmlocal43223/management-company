@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace src\notification\entities;
 
 use src\user\entities\User;
-use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;

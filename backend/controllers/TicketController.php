@@ -5,12 +5,14 @@ namespace backend\controllers;
 use backend\forms\search\TicketSearch;
 use backend\forms\TicketAssignForm;
 use backend\forms\TicketCloseForm;
+use common\components\RoleManager;
 use common\forms\TicketFileForm;
 use common\forms\TicketForm;
 use Exception;
 use src\location\repositories\ApartmentRepository;
 use src\location\repositories\HouseRepository;
 use src\notification\repositories\NotificationTypeRepository;
+use src\role\entities\Role;
 use src\role\repositories\RoleRepository;
 use src\ticket\entities\Ticket;
 use src\ticket\repositories\TicketHistoryRepository;
@@ -21,9 +23,9 @@ use src\ticket\services\TicketService;
 use src\user\repositories\UserRepository;
 use src\user\repositories\UserWorkerRepository;
 use Yii;
-use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use yii\data\ArrayDataProvider;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -79,6 +81,29 @@ class TicketController extends Controller
         return array_merge(
             parent::behaviors(),
             [
+                'access' => [
+                    'class' => AccessControl::class,
+                    'rules' => [
+                        [
+                            'actions' => [
+                                'index',
+                                'view',
+                                'create',
+                                'update',
+                                'delete',
+                                'restore',
+                                'upload',
+                                'assign',
+                                'close'
+                            ],
+                            'allow' => true,
+                            'roles' => [...Role::HEAD_ROLES, ...Role::WORKER_ROLES],
+                        ],
+                        [
+                            'allow' => false,
+                        ],
+                    ],
+                ],
                 'verbs' => [
                     'class' => VerbFilter::class,
                     'actions' => [

@@ -7,6 +7,8 @@ namespace src\location\repositories;
 use backend\forms\search\HouseSearch;
 use Exception;
 use src\location\entities\House;
+use src\location\entities\Street;
+use src\role\entities\Role;
 use src\user\entities\User;
 use src\user\entities\UserWorker;
 use Yii;
@@ -67,12 +69,20 @@ class HouseRepository
 
     public function findWorkerHouses(User $user): array
     {
-        return House::find()
-            ->innerJoinWith(['userWorkers', 'street.locality.region'])
+        $houseQuery = House::find()
+            ->innerJoinWith(['street.locality.region'])
+            ->andWhere(['house.deleted' => House::STATUS_ACTIVE]);
+
+        if (Yii::$app->roleManager->checkCurrentUserAccessToRoles([Role::ADMIN])) {
+            return $houseQuery->all();
+        }
+
+        $houseQuery
+            ->innerJoinWith(['userWorkers'])
             ->andWhere(['user_worker.user_id' => $user->id])
-            ->andWhere(['user_worker.is_active' => UserWorker::STATUS_ACTIVE])
-            ->andWhere(['house.deleted' => House::STATUS_ACTIVE])
-            ->all();
+            ->andWhere(['user_worker.is_active' => UserWorker::STATUS_ACTIVE]);
+
+        return $houseQuery->all();
     }
 
     public function findAllActiveWithRelations(): array
@@ -107,5 +117,13 @@ class HouseRepository
     public function getQuery(): ActiveQuery
     {
         return House::find()->andWhere(['deleted' => House::STATUS_ACTIVE]);
+    }
+
+    public function findByStreet(Street $street, int $isDeleted = null): array
+    {
+        return House::find()
+            ->andWhere(['house.street_id' => $street->id])
+            ->andFilterWhere(['house.deleted' => $isDeleted])
+            ->all();
     }
 }

@@ -16,6 +16,17 @@ class Role extends Model
     public const CLEANER = 'Уборщик';
     public const TENANT = 'Житель';
 
+    public const HEAD_ROLES = [
+        self::ADMIN,
+        self::MANAGER
+    ];
+
+    public const WORKER_ROLES = [
+        self::PLUMBER,
+        self::CARPENTER,
+        self::ELECTRICIAN,
+        self::CLEANER
+    ];
 
     public string $name;
     public string $description;

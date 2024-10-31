@@ -75,8 +75,12 @@ $('.role-checkbox').on('change', function() {
                     checkbox.prop('checked', !isChecked);
                 }
             },
-            error: function() {
-                alert('Произошла ошибка. Попробуйте еще раз.');
+            error: function(jqXHR) {
+                if (jqXHR.status === 403) {
+                    alert('У вас нет прав для выполнения этого действия.');
+                } else {
+                    alert('Произошла ошибка. Попробуйте еще раз.');
+                }
                 checkbox.prop('checked', !isChecked);
             }
         });

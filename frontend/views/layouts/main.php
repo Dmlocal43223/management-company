@@ -7,6 +7,7 @@
 use common\widgets\Alert;
 use frontend\assets\AppAsset;
 use src\notification\repositories\NotificationRepository;
+use src\role\entities\Role;
 use yii\bootstrap5\Breadcrumbs;
 use yii\bootstrap5\Html;
 use yii\bootstrap5\Nav;
@@ -51,7 +52,7 @@ AppAsset::register($this);
             ['label' => 'Информация', 'url' => ['/site/about']],
         ];
 
-        if (Yii::$app->user->can('Житель')) {
+        if (Yii::$app->user->can(Role::TENANT)) {
             $menuItems[] = ['label' => 'Отправить обращение', 'url' => ['/ticket/create']];
         }
 

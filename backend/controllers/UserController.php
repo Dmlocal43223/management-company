@@ -12,11 +12,8 @@ use Exception;
 use src\file\repositories\FileRepository;
 use src\location\repositories\ApartmentRepository;
 use src\location\repositories\HouseRepository;
-use src\location\repositories\LocalityRepository;
-use src\location\repositories\RegionRepository;
-use src\location\repositories\StreetRepository;
+use src\role\entities\Role;
 use src\role\repositories\RoleRepository;
-use src\role\services\RoleService;
 use src\user\entities\User;
 use src\user\entities\UserTenant;
 use src\user\repositories\UserInformationRepository;
@@ -29,8 +26,8 @@ use src\user\services\UserWorkerService;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\data\ArrayDataProvider;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
-use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
@@ -44,28 +41,20 @@ class UserController extends Controller
     private RoleRepository $roleRepository;
     private HouseRepository $houseRepository;
     private ApartmentRepository $apartmentRepository;
-    private StreetRepository $streetRepository;
-    private LocalityRepository $localityRepository;
-    private RegionRepository $regionRepository;
     private UserTenantRepository $userTenantRepository;
     private UserWorkerRepository $userWorkerRepository;
     private UserService $userService;
-    private RoleService $roleService;
     private UserTenantService $userTenantService;
     private UserWorkerService $userWorkerService;
 
     public function __construct($id, $module, $config = [])
     {
-        $this->streetRepository = new StreetRepository();
-        $this->localityRepository = new LocalityRepository();
-        $this->regionRepository = new RegionRepository();
         $this->userRepository = new UserRepository();
         $this->roleRepository = new RoleRepository(Yii::$app->authManager);
         $this->houseRepository = new HouseRepository();
         $this->apartmentRepository = new ApartmentRepository();
         $this->userTenantRepository = new UserTenantRepository();
         $this->userWorkerRepository = new UserWorkerRepository();
-        $this->roleService = new RoleService($this->roleRepository);
         $this->userService = new UserService($this->userRepository, new UserInformationRepository(), new FileRepository());
         $this->userTenantService = new UserTenantService($this->userTenantRepository);
         $this->userWorkerService = new UserWorkerService($this->userWorkerRepository);
@@ -81,6 +70,29 @@ class UserController extends Controller
         return array_merge(
             parent::behaviors(),
             [
+                'access' => [
+                    'class' => AccessControl::class,
+                    'rules' => [
+                        [
+                            'actions' => [
+                                'index',
+                                'view',
+                                'update',
+                                'delete',
+                                'restore',
+                                'change-password',
+                                'roles',
+                                'apartments',
+                                'houses'
+                            ],
+                            'allow' => true,
+                            'roles' => [Role::ADMIN, Role::MANAGER],
+                        ],
+                        [
+                            'allow' => false,
+                        ],
+                    ],
+                ],
                 'verbs' => [
                     'class' => VerbFilter::class,
                     'actions' => [

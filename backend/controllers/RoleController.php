@@ -4,10 +4,12 @@ namespace backend\controllers;
 
 use backend\forms\RoleForm;
 use Exception;
+use src\role\entities\Role;
 use src\role\repositories\RoleRepository;
 use src\role\services\RoleService;
 use Yii;
 use yii\data\ArrayDataProvider;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
 
@@ -22,6 +24,33 @@ class RoleController extends Controller
         $this->roleService = new RoleService($this->roleRepository);
 
         parent::__construct($id, $module, $config);
+    }
+
+    public function behaviors(): array
+    {
+        return array_merge(
+            parent::behaviors(),
+            [
+                'access' => [
+                    'class' => AccessControl::class,
+                    'rules' => [
+                        [
+                            'actions' => ['index', 'view', 'create', 'update', 'delete'],
+                            'allow' => true,
+                            'roles' => [Role::ADMIN],
+                        ],
+                        [
+                            'actions' => ['assign', 'revoke'],
+                            'allow' => true,
+                            'roles' => [Role::ADMIN, Role::MANAGER],
+                        ],
+                        [
+                            'allow' => false,
+                        ],
+                    ],
+                ],
+            ]
+        );
     }
 
     /**

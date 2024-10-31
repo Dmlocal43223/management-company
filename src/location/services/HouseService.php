@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace src\location\services;
 
-use backend\forms\ApartmentForm;
 use backend\forms\HouseForm;
 use Exception;
 use src\location\entities\Apartment;
@@ -88,6 +87,20 @@ class HouseService
         } catch (Exception $exception) {
             $transaction->rollBack();
             throw $exception;
+        }
+    }
+
+    public function removeHouses(array $houses): void
+    {
+        foreach ($houses as $house) {
+            $this->remove($house);
+        }
+    }
+
+    public function restoreHouses(array $houses): void
+    {
+        foreach ($houses as $house) {
+            $this->restore($house);
         }
     }
 }

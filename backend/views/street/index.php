@@ -42,8 +42,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Населенный пункт',
             ],
             'deleted:boolean',
-            'created_at',
-            'updated_at',
         ],
     ]); ?>
 

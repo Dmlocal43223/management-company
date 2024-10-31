@@ -1,5 +1,8 @@
 <?php
 
+use common\components\RoleManager;
+use yii\elasticsearch\Connection;
+
 /**
  * This class only exists here for IDE (PHPStorm/Netbeans/...) autocompletion.
  * This file is never included anywhere.
@@ -21,10 +24,11 @@ class Yii {
 /**
  * @property yii\rbac\DbManager $authManager 
  * @property \yii\web\User|__WebUser $user
- * 
+ * @property Connection $elasticsearch
+ * @property RoleManager $roleManager
+ *
  */
 class __Application {
-    public \yii\elasticsearch\Connection $elasticsearch;
 }
 
 /**

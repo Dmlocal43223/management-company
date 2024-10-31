@@ -6,6 +6,7 @@ namespace src\location\repositories;
 
 use backend\forms\search\LocalitySearch;
 use src\location\entities\Locality;
+use src\location\entities\Region;
 use yii\db\ActiveQuery;
 use yii\db\Exception;
 
@@ -49,11 +50,11 @@ class LocalityRepository
             ->all();
     }
 
-    public function findByRegionId(int $regionId): array
+    public function findByRegion(Region $region, int $isDeleted = null): array
     {
         return Locality::find()
-            ->andWhere(['region_id' => $regionId])
-            ->andWhere(['deleted' => Locality::STATUS_ACTIVE])
+            ->andWhere(['locality.region_id' => $region->id])
+            ->andFilterWhere(['locality.deleted' => $isDeleted])
             ->all();
     }
 }

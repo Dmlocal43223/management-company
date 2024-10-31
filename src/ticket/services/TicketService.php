@@ -79,7 +79,7 @@ class TicketService
         $ticketType = $this->ticketTypeRepository->findById((int)$ticketForm->type_id);
         $role = $this->roleRepository->getRoleForTicketAssignment($ticketType);
         $workers = $this->userWorkerRepository->findWorkersByHouseAndRole($house, $role);
-        $worker = reset($workers);
+        $worker = empty($workers) ? null : reset($workers);
 
         $ticket = Ticket::create(
             $ticketForm->description,

@@ -12,11 +12,13 @@ use src\location\repositories\LocalityRepository;
 use src\location\repositories\RegionRepository;
 use src\location\repositories\StreetRepository;
 use src\location\services\ApartmentService;
+use src\role\entities\Role;
 use src\user\repositories\UserRepository;
 use src\user\repositories\UserTenantRepository;
 use src\user\services\UserTenantService;
 use Yii;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -59,6 +61,33 @@ class ApartmentController extends Controller
         return array_merge(
             parent::behaviors(),
             [
+                'access' => [
+                    'class' => AccessControl::class,
+                    'rules' => [
+                        [
+                            'actions' => [
+                                'index',
+                                'view',
+                                'create',
+                                'update',
+                                'delete',
+                                'restore',
+                                'assign',
+                                'revoke'
+                            ],
+                            'allow' => true,
+                            'roles' => [Role::ADMIN, Role::MANAGER],
+                        ],
+                        [
+                            'actions' => ['find-apartments-by-house'],
+                            'allow' => true,
+                            'roles' => ['@'],
+                        ],
+                        [
+                            'allow' => false,
+                        ],
+                    ],
+                ],
                 'verbs' => [
                     'class' => VerbFilter::class,
                     'actions' => [

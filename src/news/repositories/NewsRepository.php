@@ -15,6 +15,15 @@ class NewsRepository
     {
         return News::findOne($id);
     }
+
+    public function findActiveById(int $id): ?News
+    {
+        return News::find()
+            ->andWhere(['id' => $id])
+            ->andWhere(['deleted' => News::STATUS_ACTIVE])
+            ->one();
+    }
+
     public function save(News $news): void
     {
         if (!$news->save()) {

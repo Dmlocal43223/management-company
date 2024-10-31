@@ -8,8 +8,10 @@ use src\notification\entities\NotificationType;
 use backend\forms\search\NotificationTypeSearch;
 use src\notification\repositories\NotificationTypeRepository;
 use src\notification\services\NotificationTypeService;
+use src\role\entities\Role;
 use Yii;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -39,6 +41,26 @@ class NotificationTypeController extends Controller
         return array_merge(
             parent::behaviors(),
             [
+                'access' => [
+                    'class' => AccessControl::class,
+                    'rules' => [
+                        [
+                            'actions' => [
+                                'index',
+                                'view',
+                                'create',
+                                'update',
+                                'delete',
+                                'restore',
+                            ],
+                            'allow' => true,
+                            'roles' => [Role::ADMIN],
+                        ],
+                        [
+                            'allow' => false,
+                        ],
+                    ],
+                ],
                 'verbs' => [
                     'class' => VerbFilter::class,
                     'actions' => [

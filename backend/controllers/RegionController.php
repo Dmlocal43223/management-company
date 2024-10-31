@@ -7,10 +7,18 @@ use backend\forms\search\RegionSearch;
 use Exception;
 use src\location\entities\Locality;
 use src\location\entities\Region;
+use src\location\repositories\HouseRepository;
+use src\location\repositories\LocalityRepository;
 use src\location\repositories\RegionRepository;
+use src\location\repositories\StreetRepository;
+use src\location\services\HouseService;
+use src\location\services\LocalityService;
 use src\location\services\RegionService;
+use src\location\services\StreetService;
+use src\role\entities\Role;
 use Yii;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
@@ -23,11 +31,26 @@ use yii\web\Response;
 class RegionController extends Controller
 {
     private RegionRepository $regionRepository;
+    private LocalityRepository $localityRepository;
+    private StreetRepository $streetRepository;
+    private HouseRepository $houseRepository;
     private RegionService $regionService;
+
     public function __construct($id, $module, $config = [])
     {
         $this->regionRepository = new RegionRepository();
-        $this->regionService = new RegionService($this->regionRepository);
+        $this->localityRepository = new LocalityRepository();
+        $this->streetRepository = new StreetRepository();
+        $this->houseRepository = new HouseRepository();
+        $this->regionService = new RegionService(
+            $this->regionRepository,
+            $this->localityRepository,
+            new LocalityService(
+                $this->localityRepository,
+                $this->streetRepository,
+                new StreetService($this->streetRepository, $this->houseRepository, new HouseService($this->houseRepository))
+            )
+        );
 
         parent::__construct($id, $module, $config);
     }
@@ -40,6 +63,31 @@ class RegionController extends Controller
         return array_merge(
             parent::behaviors(),
             [
+                'access' => [
+                    'class' => AccessControl::class,
+                    'rules' => [
+                        [
+                            'actions' => [
+                                'index',
+                                'view',
+                                'create',
+                                'update',
+                                'delete',
+                                'restore',
+                            ],
+                            'allow' => true,
+                            'roles' => [Role::ADMIN, Role::MANAGER],
+                        ],
+                        [
+                            'actions' => ['get-localities'],
+                            'allow' => true,
+                            'roles' => ['@'],
+                        ],
+                        [
+                            'allow' => false,
+                        ],
+                    ],
+                ],
                 'verbs' => [
                     'class' => VerbFilter::class,
                     'actions' => [

@@ -5,6 +5,7 @@
 
 use backend\assets\AppAsset;
 use common\widgets\Alert;
+use src\role\entities\Role;
 use yii\bootstrap5\Breadcrumbs;
 use yii\bootstrap5\Html;
 use yii\bootstrap5\Nav;
@@ -46,6 +47,7 @@ AppAsset::register($this);
     $menuItems = [
         [
             'label' => 'Пользователи',
+//            'visible' => Yii::$app->roleManager->checkCurrentUserAccessToRoles([Role::ADMIN, Role::MANAGER]),
             'dropDownOptions' => ['class' => 'dropdown-menu'],
             'items' => [
                 [
@@ -55,6 +57,7 @@ AppAsset::register($this);
                 [
                     'label' => 'Роли',
                     'url' => ['/role/index'],
+                    'visible' => Yii::$app->roleManager->checkCurrentUserAccessToRoles([Role::ADMIN]),
                 ]
             ]
         ],
@@ -69,17 +72,23 @@ AppAsset::register($this);
                 [
                     'label' => 'Статусы',
                     'url' => ['/ticket-status/index'],
+                    'visible' => Yii::$app->roleManager->checkCurrentUserAccessToRoles([Role::ADMIN, Role::MANAGER]),
                 ],
                 [
                     'label' => 'Типы',
                     'url' => ['/ticket-type/index'],
+                    'visible' => Yii::$app->roleManager->checkCurrentUserAccessToRoles([Role::ADMIN, Role::MANAGER]),
                 ],
             ],
         ],
-        ['label' => 'Новости', 'url' => ['/news/index']],
+        [
+            'label' => 'Новости',
+            'url' => ['/news/index'],
+        ],
         [
             'label' => 'Локация',
             'dropDownOptions' => ['class' => 'dropdown-menu'],
+            'visible' => Yii::$app->roleManager->checkCurrentUserAccessToRoles([Role::ADMIN]),
             'items' => [
                 [
                     'label' => 'Регионы',
@@ -106,6 +115,7 @@ AppAsset::register($this);
         [
             'label' => 'Настройки',
             'dropDownOptions' => ['class' => 'dropdown-menu'],
+            'visible' => Yii::$app->roleManager->checkCurrentUserAccessToRoles([Role::ADMIN]),
             'items' => [
                 [
                     'label' => 'Типы файлов',
@@ -118,13 +128,16 @@ AppAsset::register($this);
             ],
         ],
     ];
+
     if (Yii::$app->user->isGuest) {
         $menuItems[] = ['label' => 'Войти', 'url' => ['/site/login']];
-    }     
+    }
+
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav me-auto mb-2 mb-md-0'],
         'items' => $menuItems,
     ]);
+
     if (Yii::$app->user->isGuest) {
         echo Html::tag('div',Html::a('Login',['/site/login'],['class' => ['btn btn-link login text-decoration-none']]),['class' => ['d-flex']]);
     } else {

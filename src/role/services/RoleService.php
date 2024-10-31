@@ -9,7 +9,6 @@ use Exception;
 use src\role\entities\Role;
 use src\role\repositories\RoleRepository;
 use Yii;
-use yii\rbac\Assignment;
 
 class RoleService
 {

@@ -10,8 +10,10 @@ use Exception;
 use src\file\entities\FileType;
 use src\file\repositories\FileTypeRepository;
 use src\file\services\FileTypeService;
+use src\role\entities\Role;
 use Yii;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -40,6 +42,26 @@ class FileTypeController extends Controller
         return array_merge(
             parent::behaviors(),
             [
+                'access' => [
+                    'class' => AccessControl::class,
+                    'rules' => [
+                        [
+                            'actions' => [
+                                'index',
+                                'view',
+                                'create',
+                                'update',
+                                'delete',
+                                'restore',
+                            ],
+                            'allow' => true,
+                            'roles' => [Role::ADMIN],
+                        ],
+                        [
+                            'allow' => false,
+                        ],
+                    ],
+                ],
                 'verbs' => [
                     'class' => VerbFilter::class,
                     'actions' => [

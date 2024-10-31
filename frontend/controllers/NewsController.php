@@ -79,7 +79,7 @@ class NewsController extends Controller
      */
     protected function findModel(int $id): News
     {
-        $model = $this->newsRepository->findById($id);
+        $model = $this->newsRepository->findActiveById($id);
 
         if (!$model) {
             throw new NotFoundHttpException('The requested page does not exist.');

@@ -155,6 +155,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 },
             ],
             [
+                'label' => 'Загрузил',
+                'value' => function ($model) {
+                    return $model?->createdUser?->getFullName() ?? 'Неизвестный автор';
+                },
+            ],
+            [
                 'label' => 'Удалено',
                 'attribute' => 'deleted',
                 'format' => 'boolean',

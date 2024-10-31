@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace src\location\repositories;
 
 use backend\forms\search\StreetSearch;
+use src\location\entities\House;
+use src\location\entities\Locality;
 use src\location\entities\Street;
 use yii\db\ActiveQuery;
 use yii\db\Exception;
@@ -60,5 +62,13 @@ class StreetRepository
     public function findAll(): array
     {
         return Street::find()->all();
+    }
+
+    public function findByLocality(Locality $locality, int $isDeleted = null): array
+    {
+        return Street::find()
+            ->andWhere(['street.locality_id' => $locality->id])
+            ->andFilterWhere(['street.deleted' => $isDeleted])
+            ->all();
     }
 }

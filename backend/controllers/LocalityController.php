@@ -5,12 +5,18 @@ namespace backend\controllers;
 use backend\forms\LocalityForm;
 use backend\forms\search\LocalitySearch;
 use src\location\entities\Locality;
+use src\location\repositories\HouseRepository;
 use src\location\repositories\LocalityRepository;
 use src\location\repositories\RegionRepository;
+use src\location\repositories\StreetRepository;
+use src\location\services\HouseService;
 use src\location\services\LocalityService;
+use src\location\services\StreetService;
+use src\role\entities\Role;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\db\Exception;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
@@ -24,12 +30,21 @@ class LocalityController extends Controller
 {
     private LocalityRepository $localityRepository;
     private RegionRepository $regionRepository;
+    private HouseRepository $houseRepository;
     private LocalityService $localityService;
+    private StreetRepository $streetRepository;
+
     public function __construct($id, $module, $config = [])
     {
         $this->localityRepository = new LocalityRepository();
         $this->regionRepository = new RegionRepository();
-        $this->localityService = new LocalityService($this->localityRepository);
+        $this->streetRepository = new StreetRepository();
+        $this->houseRepository = new HouseRepository();
+        $this->localityService = new LocalityService(
+            $this->localityRepository,
+            $this->streetRepository,
+            new StreetService($this->streetRepository, $this->houseRepository, new HouseService($this->houseRepository))
+        );
 
         parent::__construct($id, $module, $config);
     }
@@ -42,6 +57,31 @@ class LocalityController extends Controller
         return array_merge(
             parent::behaviors(),
             [
+                'access' => [
+                    'class' => AccessControl::class,
+                    'rules' => [
+                        [
+                            'actions' => [
+                                'index',
+                                'view',
+                                'create',
+                                'update',
+                                'delete',
+                                'restore',
+                            ],
+                            'allow' => true,
+                            'roles' => [Role::ADMIN],
+                        ],
+                        [
+                            'actions' => ['find-localities'],
+                            'allow' => true,
+                            'roles' => ['@'],
+                        ],
+                        [
+                            'allow' => false,
+                        ],
+                    ],
+                ],
                 'verbs' => [
                     'class' => VerbFilter::class,
                     'actions' => [
@@ -187,9 +227,10 @@ class LocalityController extends Controller
     public function actionFindLocalities(int $region_id): array
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
+        $region = $this->regionRepository->findById($region_id);
 
         return ArrayHelper::map(
-            $this->localityRepository->findByRegionId($region_id),
+            $this->localityRepository->findByRegion($region, Locality::STATUS_ACTIVE),
             'id',
             'name'
         );
@@ -197,7 +238,8 @@ class LocalityController extends Controller
 
     public function actionFindLocalitiesByRegion($region_id): Response
     {
-        return $this->asJson($this->localityRepository->findByRegionId($region_id));
+        $region = $this->regionRepository->findById($region_id);
+        return $this->asJson($this->localityRepository->findByRegion($region, Locality::STATUS_ACTIVE));
     }
 
 

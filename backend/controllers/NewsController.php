@@ -12,9 +12,11 @@ use src\news\entities\News;
 use src\news\repositories\NewsFileRepository;
 use src\news\repositories\NewsRepository;
 use src\news\services\NewsService;
+use src\role\entities\Role;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\data\ArrayDataProvider;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\Html;
 use yii\web\Controller;
@@ -55,6 +57,27 @@ class NewsController extends Controller
         return array_merge(
             parent::behaviors(),
             [
+                'access' => [
+                    'class' => AccessControl::class,
+                    'rules' => [
+                        [
+                            'actions' => [
+                                'index',
+                                'view',
+                                'create',
+                                'update',
+                                'delete',
+                                'restore',
+                                'upload'
+                            ],
+                            'allow' => true,
+                            'roles' => [Role::ADMIN, Role::MANAGER],
+                        ],
+                        [
+                            'allow' => false,
+                        ],
+                    ],
+                ],
                 'verbs' => [
                     'class' => VerbFilter::class,
                     'actions' => [

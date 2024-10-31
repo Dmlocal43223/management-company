@@ -11,6 +11,7 @@ use src\location\repositories\LocalityRepository;
 use src\location\repositories\RegionRepository;
 use src\location\repositories\StreetRepository;
 use src\location\services\HouseService;
+use src\role\entities\Role;
 use src\user\repositories\UserRepository;
 use src\user\repositories\UserTenantRepository;
 use src\user\repositories\UserWorkerRepository;
@@ -18,6 +19,7 @@ use src\user\services\UserWorkerService;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\data\ArrayDataProvider;
+use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -62,6 +64,33 @@ class HouseController extends Controller
         return array_merge(
             parent::behaviors(),
             [
+                'access' => [
+                    'class' => AccessControl::class,
+                    'rules' => [
+                        [
+                            'actions' => [
+                                'index',
+                                'view',
+                                'create',
+                                'update',
+                                'delete',
+                                'restore',
+                                'assign',
+                                'revoke'
+                            ],
+                            'allow' => true,
+                            'roles' => [Role::ADMIN, Role::MANAGER],
+                        ],
+                        [
+                            'actions' => ['find-houses', 'find-houses-by-street'],
+                            'allow' => true,
+                            'roles' => ['@'],
+                        ],
+                        [
+                            'allow' => false,
+                        ],
+                    ],
+                ],
                 'verbs' => [
                     'class' => VerbFilter::class,
                     'actions' => [
@@ -225,22 +254,6 @@ class HouseController extends Controller
         return $this->redirect(['view', 'id' => $model->id]);
     }
 
-    public function actionFindHouses(int $street_id): array
-    {
-        Yii::$app->response->format = Response::FORMAT_JSON;
-
-        return ArrayHelper::map(
-            $this->houseRepository->findByStreetId($street_id),
-            'id',
-            'number'
-        );
-    }
-
-    public function actionFindHousesByStreet(int $street_id): Response
-    {
-        return $this->asJson($this->houseRepository->findByStreetId($street_id));
-    }
-
     public function actionAssign(): Response
     {
         $userId = Yii::$app->request->post('userId');
@@ -271,6 +284,22 @@ class HouseController extends Controller
         } catch (Exception $e) {
             return $this->asJson(['success' => false, 'message' => $e->getMessage()]);
         }
+    }
+
+    public function actionFindHouses(int $street_id): array
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        return ArrayHelper::map(
+            $this->houseRepository->findByStreetId($street_id),
+            'id',
+            'number'
+        );
+    }
+
+    public function actionFindHousesByStreet(int $street_id): Response
+    {
+        return $this->asJson($this->houseRepository->findByStreetId($street_id));
     }
 
     /**

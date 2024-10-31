@@ -4,15 +4,18 @@ namespace backend\controllers;
 
 use backend\forms\StreetForm;
 use Exception;
-use src\location\entities\Locality;
 use src\location\entities\Street;
 use backend\forms\search\StreetSearch;
+use src\location\repositories\HouseRepository;
 use src\location\repositories\LocalityRepository;
 use src\location\repositories\RegionRepository;
 use src\location\repositories\StreetRepository;
+use src\location\services\HouseService;
 use src\location\services\StreetService;
+use src\role\entities\Role;
 use Yii;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -27,13 +30,18 @@ class StreetController extends Controller
     private StreetRepository $streetRepository;
     private LocalityRepository $localityRepository;
     private RegionRepository $regionRepository;
+    private HouseRepository $houseRepository;
     private StreetService $streetService;
+    private HouseService $houseService;
+
     public function __construct($id, $module, $config = [])
     {
         $this->streetRepository = new StreetRepository();
         $this->localityRepository = new LocalityRepository();
         $this->regionRepository = new RegionRepository();
-        $this->streetService = new StreetService($this->streetRepository);
+        $this->houseRepository = new HouseRepository();
+        $this->houseService = new HouseService($this->houseRepository);
+        $this->streetService = new StreetService($this->streetRepository, $this->houseRepository, $this->houseService);
 
         parent::__construct($id, $module, $config);
     }
@@ -46,6 +54,31 @@ class StreetController extends Controller
         return array_merge(
             parent::behaviors(),
             [
+                'access' => [
+                    'class' => AccessControl::class,
+                    'rules' => [
+                        [
+                            'actions' => [
+                                'index',
+                                'view',
+                                'create',
+                                'update',
+                                'delete',
+                                'restore',
+                            ],
+                            'allow' => true,
+                            'roles' => [Role::ADMIN, Role::MANAGER],
+                        ],
+                        [
+                            'actions' => ['find-streets', 'find-streets-by-locality'],
+                            'allow' => true,
+                            'roles' => ['@'],
+                        ],
+                        [
+                            'allow' => false,
+                        ],
+                    ],
+                ],
                 'verbs' => [
                     'class' => VerbFilter::class,
                     'actions' => [
